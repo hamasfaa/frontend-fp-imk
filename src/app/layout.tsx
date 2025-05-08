@@ -20,11 +20,11 @@ export default function RootLayout({
     <html lang="id" className="light">
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-          <div className="flex justify-center">
-            <div className="relative flex min-h-screen flex-col">
+          <div className="relative flex min-h-screen flex-col">
+            <div className="md:px-12">
               <Header />
-              {children}
             </div>
+            {children}
           </div>
         </ThemeProvider>
       </body>

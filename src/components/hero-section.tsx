@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export default function HeroSection() {
   return (
-    <section className="relative py-20 md:py-28 overflow-hidden">
+    <section className="relative py-20 md:py-28 overflow-hidden md:px-12">
       {/* Subtle background elements */}
       <div className="absolute inset-0 -z-10 elegant-gradient"></div>
       <div className="absolute inset-0 -z-10 subtle-dots"></div>
