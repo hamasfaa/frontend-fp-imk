@@ -72,7 +72,7 @@ export default function Home() {
           </h2>
 
           <Link
-            href="/berita"
+            href="/Trashedu"
             className="flex items-center gap-1 text-green-600 hover:text-green-700 group"
           >
             Lihat Semua
@@ -82,12 +82,12 @@ export default function Home() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[1, 2, 3].map((index) => (
-            <Link href="/berita" key={index} className="group">
+            <Link href="/Trashedu" key={index} className="group">
               <div className="elegant-card overflow-hidden hover-scale">
                 <div className="relative h-48 w-full">
                   <img
                     src="/placeholder.svg?height=200&width=400"
-                    alt={`Berita ${index}`}
+                    alt={`Trashedu ${index}`}
                     className="object-cover w-full h-full"
                   />
                 </div>
