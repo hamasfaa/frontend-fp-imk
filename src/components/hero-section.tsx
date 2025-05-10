@@ -19,7 +19,7 @@ export default function HeroSection() {
           {/* Mobile: Judul di atas, Desktop: Kiri */}
           <div className="order-1 md:order-1 max-w-xl flex flex-col">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-              <span className="subtle-gradient-text">Bank Sampah</span>{" "}
+              <span className="subtle-gradient-text">Trashsure</span>{" "}
               Marketplace
             </h1>
             {/* Desktop: Deskripsi, fitur, tombol */}
