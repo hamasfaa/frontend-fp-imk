@@ -1,13 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import {
-  ArrowRight,
-  Newspaper,
-  Video,
-  FileText,
-  Clock,
-  Calendar,
-} from "lucide-react";
+import { ArrowRight, Newspaper, Video, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -115,53 +108,19 @@ const videos = [
   },
 ];
 
-// Mock data for events
-const events = [
-  {
-    id: 1,
-    title: "Konferensi Nasional Pengelolaan Sampah 2024",
-    description:
-      "Konferensi tahunan yang membahas inovasi dan kebijakan pengelolaan sampah di Indonesia.",
-    date: "20 April 2024",
-    time: "09:00 - 17:00",
-    location: "Jakarta Convention Center",
-    image: "/placeholder.svg?height=200&width=400",
-  },
-  {
-    id: 2,
-    title: "Webinar: Teknologi Pengolahan Sampah Terkini",
-    description:
-      "Diskusi online tentang teknologi terbaru dalam pengolahan dan daur ulang sampah.",
-    date: "25 April 2024",
-    time: "13:00 - 16:00",
-    location: "Online via Zoom",
-    image: "/placeholder.svg?height=200&width=400",
-  },
-  {
-    id: 3,
-    title: "Aksi Bersih Pantai Nasional",
-    description:
-      "Gerakan nasional membersihkan pantai yang dilakukan serentak di berbagai kota di Indonesia.",
-    date: "30 April 2024",
-    time: "07:00 - 11:00",
-    location: "Berbagai lokasi pantai di Indonesia",
-    image: "/placeholder.svg?height=200&width=400",
-  },
-];
-
 export default function BeritaPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="text-center mb-12">
-        <h1 className="text-3xl font-bold mb-4">Edukasi Terbaru</h1>
+        <h1 className="text-3xl font-bold mb-4">TrashEdu</h1>
         <p className="text-muted-foreground max-w-2xl mx-auto">
-          Dapatkan informasi terbaru seputar pengelolaan sampah, inovasi daur
-          ulang, dan kebijakan lingkungan di Indonesia
+          Dapatkan informasi terbaru seputar pengelolaan sampah dan inovasi daur
+          ulang
         </p>
       </div>
 
       <Tabs defaultValue="articles" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 mb-8">
+        <TabsList className="grid w-full grid-cols-2 mb-8">
           <TabsTrigger value="articles" className="flex items-center gap-2">
             <Newspaper className="h-4 w-4" />
             Artikel
@@ -169,10 +128,6 @@ export default function BeritaPage() {
           <TabsTrigger value="videos" className="flex items-center gap-2">
             <Video className="h-4 w-4" />
             Video
-          </TabsTrigger>
-          <TabsTrigger value="events" className="flex items-center gap-2">
-            <Calendar className="h-4 w-4" />
-            Acara
           </TabsTrigger>
         </TabsList>
 
@@ -270,78 +225,7 @@ export default function BeritaPage() {
             <Button variant="outline">Lihat Semua Video</Button>
           </div>
         </TabsContent>
-
-        <TabsContent value="events">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {events.map((event) => (
-              <Card key={event.id} className="overflow-hidden">
-                <div className="relative h-48 w-full">
-                  <Image
-                    src={event.image || "/placeholder.svg"}
-                    alt={event.title}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <CardHeader className="p-4 pb-0">
-                  <CardTitle className="text-xl">{event.title}</CardTitle>
-                  <CardDescription className="flex items-center gap-1 text-sm text-muted-foreground">
-                    <Calendar className="h-3 w-3" />
-                    {event.date} • {event.time}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="p-4 pt-2">
-                  <p className="text-muted-foreground mb-2">
-                    {event.description}
-                  </p>
-                  <div className="flex items-start gap-1 text-sm text-muted-foreground">
-                    <FileText className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                    <span>{event.location}</span>
-                  </div>
-                </CardContent>
-                <CardFooter className="p-4 pt-0">
-                  <Link href={`/berita/events/${event.id}`}>
-                    <Button
-                      variant="ghost"
-                      className="p-0 h-auto text-green-600 hover:text-green-700"
-                    >
-                      Detail Acara
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </Link>
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
-          <div className="text-center mt-8">
-            <Button variant="outline">Lihat Semua Acara</Button>
-          </div>
-        </TabsContent>
       </Tabs>
-
-      <div className="mt-16 bg-green-50 rounded-lg p-8">
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-green-800 mb-2">
-            Berlangganan Newsletter
-          </h2>
-          <p className="text-green-700 max-w-2xl mx-auto">
-            Dapatkan berita terbaru tentang pengelolaan sampah dan lingkungan
-            langsung ke email Anda
-          </p>
-        </div>
-        <div className="max-w-md mx-auto">
-          <div className="flex gap-2">
-            <input
-              type="email"
-              placeholder="Masukkan email Anda"
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-            />
-            <Button className="bg-green-600 hover:bg-green-700">
-              Berlangganan
-            </Button>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
