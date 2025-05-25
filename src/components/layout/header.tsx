@@ -104,12 +104,12 @@ export default function Header() {
                   </Link>
                 ))}
                 <div className="border-t my-4 pt-4">
-                  <Link href="/auth/login">
+                  <Link href="/login">
                     <Button className="w-full mb-2 bg-green-600 hover:bg-green-700 rounded-xl h-12">
                       Masuk
                     </Button>
                   </Link>
-                  <Link href="/auth/register">
+                  <Link href="/register">
                     <Button
                       variant="outline"
                       className="w-full rounded-xl h-12 border-2"
@@ -281,12 +281,12 @@ export default function Header() {
               align="end"
               className="glass-card border-0 rounded-xl"
             >
-              <Link href="/auth/login">
+              <Link href="/login">
                 <DropdownMenuItem className="rounded-lg">
                   Masuk
                 </DropdownMenuItem>
               </Link>
-              <Link href="/auth/register">
+              <Link href="/register">
                 <DropdownMenuItem className="rounded-lg">
                   Daftar
                 </DropdownMenuItem>
