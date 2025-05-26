@@ -16,12 +16,31 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { useLogin } from "./hooks/useLogin";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const { login, loading, error } = useLogin();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!username || !password) {
+      alert("Username dan password harus diisi");
+      return;
+    }
+
+    const response = await login(username, password);
+    if (response.success) {
+      alert("Login berhasil!");
+    } else {
+      alert(response.message || "Gagal login");
+    }
   };
 
   return (
@@ -32,23 +51,24 @@ export default function LoginPage() {
             Masuk ke Akun Anda
           </CardTitle>
           <CardDescription>
-            Masukkan email dan password untuk mengakses akun Anda
+            Masukkan username dan password untuk mengakses akun Anda
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="email" className="w-full">
-            <TabsContent value="email">
-              <form>
+          <Tabs defaultValue="username" className="w-full">
+            <TabsContent value="username">
+              <form onSubmit={handleLogin}>
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="username">Username</Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                       <Input
-                        id="email"
-                        type="email"
-                        placeholder="nama@email.com"
+                        type="text"
+                        placeholder="Username"
                         className="pl-10"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
                       />
                     </div>
                   </div>
@@ -69,6 +89,8 @@ export default function LoginPage() {
                         type={showPassword ? "text" : "password"}
                         placeholder="••••••••"
                         className="pl-10"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                       />
                       <button
                         type="button"
@@ -91,10 +113,12 @@ export default function LoginPage() {
                   </div>
                   <Button
                     type="submit"
+                    disabled={loading}
                     className="w-full bg-green-600 hover:bg-green-700"
                   >
-                    Masuk
+                    {loading ? "Memproses..." : "Masuk"}
                   </Button>
+                  {error && <p className="text-sm text-red-600">{error}</p>}
                 </div>
               </form>
             </TabsContent>
