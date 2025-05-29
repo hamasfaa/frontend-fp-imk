@@ -1,12 +1,12 @@
 "use client";
 
+import { setAuthCookies } from "@/app/actions/auth";
 import api from "@/lib/api";
 import { useState } from "react";
 
 export function useLogin() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [token, setToken] = useState<string | null>(null);
 
   const login = async (username: string, password: string) => {
     setLoading(true);
@@ -21,10 +21,12 @@ export function useLogin() {
       const data = response.data;
 
       if (data.code === 200 && data.data?.token) {
-        setToken(data.data.token);
-        localStorage.setItem("token", data.data.token);
-        localStorage.setItem("username", data.data.username);
-        localStorage.setItem("role", data.data.role[0].role);
+        await setAuthCookies({
+          token: data.data.token,
+          username: data.data.username,
+          role: data.data.role[0].role,
+        });
+
         return { success: true };
       } else {
         throw new Error(data.message || "Login gagal");
@@ -37,5 +39,5 @@ export function useLogin() {
     }
   };
 
-  return { login, loading, error, token };
+  return { login, loading, error };
 }
