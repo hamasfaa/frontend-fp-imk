@@ -12,7 +12,7 @@ export async function setAuthCookies(userData: {
     value: userData.token,
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    maxAge: 60 * 60 * 24 * 7, // 1 week
+    maxAge: 60 * 60, // 1 jam
     path: "/",
     sameSite: "strict",
   });
@@ -22,7 +22,7 @@ export async function setAuthCookies(userData: {
     value: userData.username,
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    maxAge: 60 * 60 * 24 * 7,
+    maxAge: 60 * 60,
     path: "/",
     sameSite: "strict",
   });
@@ -32,7 +32,7 @@ export async function setAuthCookies(userData: {
     value: userData.role,
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    maxAge: 60 * 60 * 24 * 7,
+    maxAge: 60 * 60,
     path: "/",
     sameSite: "strict",
   });
