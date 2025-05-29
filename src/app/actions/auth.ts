@@ -40,7 +40,7 @@ export async function setAuthCookies(userData: {
   return { success: true };
 }
 
-export async function clearAuthCookies() {
+export async function logout() {
   (await cookies()).delete("token");
   (await cookies()).delete("username");
   (await cookies()).delete("role");

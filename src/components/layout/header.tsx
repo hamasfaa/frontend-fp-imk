@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import {
   Menu,
@@ -26,11 +26,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { logout } from "@/app/actions/auth";
+import { useTransition } from "react";
 
 export default function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -44,6 +48,13 @@ export default function Header() {
 
   const isActive = (path: string) => {
     return pathname === path;
+  };
+
+  const handleLogout = () => {
+    startTransition(() => {
+      logout();
+      router.push("/login");
+    });
   };
 
   const navItems = [
@@ -305,9 +316,13 @@ export default function Header() {
                 </DropdownMenuItem>
               </Link>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="rounded-lg text-red-600">
+              <DropdownMenuItem
+                className="rounded-lg text-red-600 cursor-pointer"
+                onClick={handleLogout}
+                disabled={isPending}
+              >
                 <LogOut className="h-4 w-4 mr-2" />
-                Keluar
+                {isPending ? "Keluar..." : "Keluar"}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

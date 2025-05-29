@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import Header from "@/components/layout/header";
+import ConditionalHeader from "@/components/layout/conditional-header";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,9 +21,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <div className="relative flex min-h-screen flex-col">
-            <div className="md:px-12">
-              <Header />
-            </div>
+            <ConditionalHeader />
             {children}
           </div>
         </ThemeProvider>

@@ -17,12 +17,14 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useLogin } from "./hooks/useLogin";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const { login, loading, error } = useLogin();
+  const router = useRouter();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -38,6 +40,7 @@ export default function LoginPage() {
     const response = await login(username, password);
     if (response.success) {
       alert("Login berhasil!");
+      router.push("/");
     } else {
       alert(response.message || "Gagal login");
     }
