@@ -36,10 +36,10 @@ export default function FeatureSection() {
   ];
 
   return (
-    <section className="my-16 relative md:px-12">
+    <section className="my-16 relative md:px-32">
       <div className="text-center mb-12 relative">
         <h2 className="text-3xl md:text-4xl font-bold mb-2 inline-block relative elegant-underline">
-          <span className="subtle-gradient-text">Fitur</span>Utama
+          <span className="subtle-gradient-text">Fitur</span> Utama
         </h2>
         <p className="text-gray-600 max-w-md mx-auto">
           Jelajahi dan gunakan fitur-fitur yang tersedia untuk mendukung
