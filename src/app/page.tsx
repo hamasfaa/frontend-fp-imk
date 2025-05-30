@@ -4,13 +4,14 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import ProductCard from "@/components/product-card";
 import WasteCollectionCTA from "@/components/waste-collection-cta";
+import GiftCollectionCTA from "@/components/gift-collection-cta";
 
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       <HeroSection />
       <FeatureSection />
-      <div className="mx-32">
+      <div className="mx-8 md:mx-32">
         {/* Products section with elegant styling */}
         <section className="my-16 relative">
           {/* Section header with elegant styling */}
@@ -70,11 +71,11 @@ export default function Home() {
         <section className="my-16 relative">
           <div className="flex items-center justify-between mb-8 relative">
             <h2 className="text-2xl md:text-3xl font-bold relative elegant-underline">
-              <span className="subtle-gradient-text">Edukasi Terbaru</span>
+              <span className="subtle-gradient-text">Edukasi</span> Terbaru
             </h2>
 
             <Link
-              href="/Trashedu"
+              href="/trashedu"
               className="flex items-center gap-1 text-green-600 hover:text-green-700 group"
             >
               Lihat Semua
@@ -84,7 +85,7 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[1, 2, 3].map((index) => (
-              <Link href="/Trashedu" key={index} className="group">
+              <Link href="/trashedu" key={index} className="group">
                 <div className="elegant-card overflow-hidden hover-scale">
                   <div className="relative h-48 w-full">
                     <img
@@ -126,6 +127,8 @@ export default function Home() {
             ))}
           </div>
         </section>
+
+        <GiftCollectionCTA />
       </div>
     </div>
   );
