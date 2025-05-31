@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Newspaper, Video, Clock } from "lucide-react";
@@ -12,70 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-
-// Mock data for articles
-const articles = [
-  {
-    id: 1,
-    title: "Indonesia Berhasil Kurangi Sampah Plastik 30% dalam 2 Tahun",
-    excerpt:
-      "Program nasional pengurangan sampah plastik menunjukkan hasil positif dengan penurunan signifikan dalam dua tahun terakhir.",
-    image: "/placeholder.svg?height=200&width=400",
-    category: "Nasional",
-    date: "10 April 2024",
-    readTime: "5 menit",
-  },
-  {
-    id: 2,
-    title: "Inovasi Baru: Plastik yang Dapat Terurai dalam 6 Bulan",
-    excerpt:
-      "Peneliti Indonesia berhasil mengembangkan plastik ramah lingkungan yang dapat terurai sempurna dalam waktu 6 bulan.",
-    image: "/placeholder.svg?height=200&width=400",
-    category: "Teknologi",
-    date: "5 April 2024",
-    readTime: "8 menit",
-  },
-  {
-    id: 3,
-    title: "Bank Sampah Jakarta Kumpulkan 100 Ton Sampah Daur Ulang",
-    excerpt:
-      "Bank Sampah di Jakarta berhasil mengumpulkan 100 ton sampah yang berpotensi didaur ulang dalam program terbaru mereka.",
-    image: "/placeholder.svg?height=200&width=400",
-    category: "Lokal",
-    date: "1 April 2024",
-    readTime: "6 menit",
-  },
-  {
-    id: 4,
-    title: "Pemerintah Luncurkan Kebijakan Baru Pengelolaan Sampah",
-    excerpt:
-      "Kementerian Lingkungan Hidup dan Kehutanan meluncurkan kebijakan baru untuk mendorong pengelolaan sampah yang lebih baik.",
-    image: "/placeholder.svg?height=200&width=400",
-    category: "Kebijakan",
-    date: "28 Maret 2024",
-    readTime: "7 menit",
-  },
-  {
-    id: 5,
-    title: "Komunitas Peduli Sampah Bersihkan Pantai Kuta",
-    excerpt:
-      "Ratusan relawan dari komunitas peduli sampah melakukan aksi bersih-bersih di Pantai Kuta, Bali.",
-    image: "/placeholder.svg?height=200&width=400",
-    category: "Komunitas",
-    date: "25 Maret 2024",
-    readTime: "4 menit",
-  },
-  {
-    id: 6,
-    title: "Studi: 70% Sampah di Laut Indonesia Berasal dari Daratan",
-    excerpt:
-      "Penelitian terbaru mengungkapkan bahwa mayoritas sampah di laut Indonesia berasal dari aktivitas di daratan.",
-    image: "/placeholder.svg?height=200&width=400",
-    category: "Penelitian",
-    date: "20 Maret 2024",
-    readTime: "9 menit",
-  },
-];
+import { useArticles } from "./hooks/useArticles";
 
 // Mock data for videos
 const videos = [
@@ -109,6 +48,24 @@ const videos = [
 ];
 
 export default function BeritaPage() {
+  const { articles, loading, error } = useArticles();
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8 text-center">
+        <p>Memuat artikel...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8 text-center text-red-500">
+        <p>Error: {error}. Gagal memuat artikel.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="text-center mb-12">
@@ -160,7 +117,11 @@ export default function BeritaPage() {
                   <p className="text-muted-foreground">{article.excerpt}</p>
                 </CardContent>
                 <CardFooter className="p-4 pt-0">
-                  <Link href={`/berita/articles/${article.id}`}>
+                  <Link
+                    href={article.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     <Button
                       variant="ghost"
                       className="p-0 h-auto text-green-600 hover:text-green-700"
