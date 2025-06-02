@@ -163,7 +163,10 @@ export default function DashboardPage() {
                           </DropdownMenuContent>
                         </DropdownMenu>
 
-                        <Link href="/products/add" className="w-full md:w-auto">
+                        <Link
+                          href="/dashboard/add"
+                          className="w-full md:w-auto"
+                        >
                           <Button className="bg-green-600 hover:bg-green-700 w-full">
                             <Plus className="h-4 w-4 mr-2" />
                             Tambah
