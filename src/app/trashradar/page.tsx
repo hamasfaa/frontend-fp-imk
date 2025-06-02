@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import {
   MapPin,
-  Filter,
   Navigation,
   Clock,
   Phone,
@@ -21,18 +20,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-  SheetFooter,
-  SheetClose,
-} from "@/components/ui/sheet";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 // Data TPA (Tempat Pembuangan Akhir) - dalam aplikasi nyata ini akan diambil dari API
@@ -44,15 +32,9 @@ const tpaData = [
     distance: 5.2,
     phone: "021-12345678",
     operationalHours: "07:00 - 18:00",
-    wasteTypes: ["Umum", "Organik", "Anorganik"],
     coordinates: { lat: -6.2088, lng: 106.9975 },
     description:
       "TPA terbesar di area Jabodetabek yang menerima berbagai jenis sampah rumah tangga dan komersial.",
-    facilities: [
-      "Pengolahan Kompos",
-      "Pemilahan Sampah",
-      "Pengelolaan Gas Metana",
-    ],
   },
   {
     id: 2,
@@ -61,15 +43,9 @@ const tpaData = [
     distance: 2.8,
     phone: "021-87654321",
     operationalHours: "08:00 - 16:00",
-    wasteTypes: ["Plastik", "Kertas", "Logam", "Kaca"],
     coordinates: { lat: -6.2601, lng: 106.8113 },
     description:
       "Bank sampah yang menerima sampah anorganik dan memberikan kompensasi berupa uang atau poin.",
-    facilities: [
-      "Pemilahan Sampah",
-      "Penimbangan",
-      "Pencatatan Tabungan Sampah",
-    ],
   },
   {
     id: 3,
@@ -78,15 +54,9 @@ const tpaData = [
     distance: 3.5,
     phone: "021-55667788",
     operationalHours: "08:00 - 17:00",
-    wasteTypes: ["Plastik", "Kertas", "Kardus", "Elektronik"],
     coordinates: { lat: -6.2251, lng: 106.9005 },
     description:
       "Pusat daur ulang yang fokus pada pengolahan sampah plastik dan kertas menjadi produk baru.",
-    facilities: [
-      "Mesin Pencacah Plastik",
-      "Pengolahan Kertas",
-      "Edukasi Daur Ulang",
-    ],
   },
   {
     id: 4,
@@ -95,15 +65,9 @@ const tpaData = [
     distance: 8.7,
     phone: "021-99887766",
     operationalHours: "06:00 - 18:00",
-    wasteTypes: ["Umum", "Organik", "Anorganik"],
     coordinates: { lat: -6.1781, lng: 106.63 },
     description:
       "TPA yang melayani area Tangerang dan sekitarnya dengan sistem pengolahan sampah terpadu.",
-    facilities: [
-      "Pengolahan Lindi",
-      "Pemilahan Sampah",
-      "Pengelolaan Gas Metana",
-    ],
   },
   {
     id: 5,
@@ -112,15 +76,9 @@ const tpaData = [
     distance: 4.3,
     phone: "021-11223344",
     operationalHours: "09:00 - 16:00",
-    wasteTypes: ["Elektronik", "Baterai", "Limbah B3"],
     coordinates: { lat: -6.1754, lng: 106.769 },
     description:
       "Pusat daur ulang khusus untuk limbah elektronik dan baterai dengan penanganan khusus.",
-    facilities: [
-      "Pemilahan Komponen",
-      "Pengolahan Limbah B3",
-      "Daur Ulang Logam Berharga",
-    ],
   },
   {
     id: 6,
@@ -129,15 +87,9 @@ const tpaData = [
     distance: 7.1,
     phone: "021-44332211",
     operationalHours: "08:00 - 15:00",
-    wasteTypes: ["Plastik", "Kertas", "Logam", "Kaca"],
     coordinates: { lat: -6.4025, lng: 106.7942 },
     description:
       "Bank sampah yang dikelola oleh komunitas lokal dengan sistem tabungan sampah.",
-    facilities: [
-      "Pemilahan Sampah",
-      "Penimbangan",
-      "Pencatatan Tabungan Sampah",
-    ],
   },
 ];
 
@@ -148,7 +100,6 @@ export default function TPATerdekatPage() {
   const [locationError, setLocationError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<"distance" | "name">("distance");
   const [tpaList, setTpaList] = useState(tpaData);
   const [selectedTPA, setSelectedTPA] = useState<number | null>(null);
@@ -191,13 +142,6 @@ export default function TPATerdekatPage() {
       );
     }
 
-    // Filter berdasarkan jenis sampah
-    if (activeFilters.length > 0) {
-      filteredTPA = filteredTPA.filter((tpa) =>
-        tpa.wasteTypes.some((type) => activeFilters.includes(type))
-      );
-    }
-
     // Urutkan berdasarkan jarak atau nama
     filteredTPA.sort((a, b) => {
       if (sortBy === "distance") {
@@ -208,19 +152,7 @@ export default function TPATerdekatPage() {
     });
 
     setTpaList(filteredTPA);
-  }, [searchQuery, activeFilters, sortBy]);
-
-  const toggleFilter = (filter: string) => {
-    if (activeFilters.includes(filter)) {
-      setActiveFilters(activeFilters.filter((f) => f !== filter));
-    } else {
-      setActiveFilters([...activeFilters, filter]);
-    }
-  };
-
-  const clearFilters = () => {
-    setActiveFilters([]);
-  };
+  }, [searchQuery, sortBy]);
 
   const refreshLocation = () => {
     if (navigator.geolocation) {
@@ -291,91 +223,6 @@ export default function TPATerdekatPage() {
             <option value="distance">Urutkan: Terdekat</option>
             <option value="name">Urutkan: Nama</option>
           </select>
-
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="outline" className="flex items-center gap-2">
-                <Filter className="h-4 w-4" />
-                Filter
-                {activeFilters.length > 0 && (
-                  <Badge className="ml-1 bg-green-600 text-white">
-                    {activeFilters.length}
-                  </Badge>
-                )}
-              </Button>
-            </SheetTrigger>
-            <SheetContent>
-              <SheetHeader>
-                <SheetTitle>Filter TPA</SheetTitle>
-              </SheetHeader>
-              <div className="py-4">
-                <div className="mb-6">
-                  <h3 className="font-medium mb-3">
-                    Jenis Sampah yang Diterima
-                  </h3>
-                  <div className="space-y-2">
-                    {[
-                      "Umum",
-                      "Organik",
-                      "Anorganik",
-                      "Plastik",
-                      "Kertas",
-                      "Logam",
-                      "Kaca",
-                      "Elektronik",
-                      "Limbah B3",
-                    ].map((type) => (
-                      <div key={type} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`type-${type}`}
-                          checked={activeFilters.includes(type)}
-                          onCheckedChange={() => toggleFilter(type)}
-                        />
-                        <Label htmlFor={`type-${type}`}>{type}</Label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="mb-6">
-                  <h3 className="font-medium mb-3">Jenis Fasilitas</h3>
-                  <div className="space-y-2">
-                    {[
-                      "Pengolahan Kompos",
-                      "Pemilahan Sampah",
-                      "Penimbangan",
-                      "Daur Ulang",
-                      "Pengolahan Limbah B3",
-                    ].map((facility) => (
-                      <div
-                        key={facility}
-                        className="flex items-center space-x-2"
-                      >
-                        <Checkbox id={`facility-${facility}`} />
-                        <Label htmlFor={`facility-${facility}`}>
-                          {facility}
-                        </Label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <SheetFooter className="flex flex-row gap-3 sm:justify-between">
-                <Button
-                  variant="outline"
-                  onClick={clearFilters}
-                  className="flex-1"
-                >
-                  Reset
-                </Button>
-                <SheetClose asChild>
-                  <Button className="flex-1 bg-green-600 hover:bg-green-700">
-                    Terapkan
-                  </Button>
-                </SheetClose>
-              </SheetFooter>
-            </SheetContent>
-          </Sheet>
         </div>
       </div>
 
@@ -433,22 +280,6 @@ export default function TPATerdekatPage() {
                           <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
                           <span>{tpa.phone}</span>
                         </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground mb-2">
-                            Menerima sampah:
-                          </p>
-                          <div className="flex flex-wrap gap-1">
-                            {tpa.wasteTypes.map((type) => (
-                              <Badge
-                                key={type}
-                                variant="outline"
-                                className="text-xs"
-                              >
-                                {type}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
                         <div className="pt-2 flex justify-between">
                           <Button
                             variant="outline"
@@ -476,13 +307,6 @@ export default function TPATerdekatPage() {
                 <h3 className="text-lg font-medium mb-2">
                   Tidak ada TPA yang ditemukan
                 </h3>
-                <p className="text-muted-foreground mb-4">
-                  Coba ubah filter atau kata kunci pencarian Anda, atau perluas
-                  jangkauan pencarian
-                </p>
-                <Button variant="outline" onClick={clearFilters}>
-                  Reset Filter
-                </Button>
               </div>
             )}
           </TabsContent>
@@ -537,42 +361,6 @@ export default function TPATerdekatPage() {
                         Telepon:{" "}
                         {tpaData.find((tpa) => tpa.id === selectedTPA)?.phone}
                       </span>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-2">
-                        Menerima sampah:
-                      </p>
-                      <div className="flex flex-wrap gap-1">
-                        {tpaData
-                          .find((tpa) => tpa.id === selectedTPA)
-                          ?.wasteTypes.map((type) => (
-                            <Badge
-                              key={type}
-                              variant="outline"
-                              className="text-xs"
-                            >
-                              {type}
-                            </Badge>
-                          ))}
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-2">
-                        Fasilitas:
-                      </p>
-                      <div className="flex flex-wrap gap-1">
-                        {tpaData
-                          .find((tpa) => tpa.id === selectedTPA)
-                          ?.facilities.map((facility) => (
-                            <Badge
-                              key={facility}
-                              variant="outline"
-                              className="text-xs"
-                            >
-                              {facility}
-                            </Badge>
-                          ))}
-                      </div>
                     </div>
                     <div className="pt-2 flex justify-between">
                       <Button variant="outline" className="text-green-600">
