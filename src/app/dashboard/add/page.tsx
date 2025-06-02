@@ -9,7 +9,6 @@ import Link from "next/link";
 import { ArrowLeft, Upload, X, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -34,9 +33,9 @@ export default function AddProductPage() {
   const [images, setImages] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     title: "",
-    description: "",
-    price: "",
     category: "",
+    quantity: "",
+    price: "",
   });
 
   const handleChange = (
@@ -113,20 +112,29 @@ export default function AddProductPage() {
                         required
                       />
                     </div>
-
                     <div>
-                      <Label htmlFor="description" className="text-base">
-                        Deskripsi <span className="text-red-500">*</span>
+                      <Label htmlFor="category" className="text-base">
+                        Kategori <span className="text-red-500">*</span>
                       </Label>
-                      <Textarea
-                        id="description"
-                        name="description"
-                        placeholder="Jelaskan produk Anda secara detail"
-                        value={formData.description}
-                        onChange={handleChange}
-                        className="mt-1.5 min-h-[120px]"
+                      <Select
+                        value={formData.category}
+                        onValueChange={(value) =>
+                          handleSelectChange("category", value)
+                        }
                         required
-                      />
+                      >
+                        <SelectTrigger id="category" className="mt-1.5">
+                          <SelectValue placeholder="Pilih kategori" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Produk Olahan">
+                            Produk Olahan
+                          </SelectItem>
+                          <SelectItem value="Sampah Mentah">
+                            Sampah Mentah
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -146,28 +154,19 @@ export default function AddProductPage() {
                         />
                       </div>
                       <div>
-                        <Label htmlFor="category" className="text-base">
-                          Kategori <span className="text-red-500">*</span>
+                        <Label htmlFor="price" className="text-base">
+                          Jumlah <span className="text-red-500">*</span>
                         </Label>
-                        <Select
-                          value={formData.category}
-                          onValueChange={(value) =>
-                            handleSelectChange("category", value)
-                          }
+                        <Input
+                          id="price"
+                          name="price"
+                          type="number"
+                          placeholder="0"
+                          value={formData.quantity}
+                          onChange={handleChange}
+                          className="mt-1.5"
                           required
-                        >
-                          <SelectTrigger id="category" className="mt-1.5">
-                            <SelectValue placeholder="Pilih kategori" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Produk Olahan">
-                              Produk Olahan
-                            </SelectItem>
-                            <SelectItem value="Sampah Mentah">
-                              Sampah Mentah
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
+                        />
                       </div>
                     </div>
 
