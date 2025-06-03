@@ -1,7 +1,7 @@
 "use client";
 
 import { setAuthCookies } from "@/app/actions/auth";
-import api from "@/lib/api";
+import { jsonRequest } from "@/lib/api";
 import { useState } from "react";
 
 export function useLogin() {
@@ -13,7 +13,7 @@ export function useLogin() {
     setError(null);
 
     try {
-      const response = await api.post("/authentication", {
+      const response = await jsonRequest("/authentication", "POST", {
         username,
         password,
       });
