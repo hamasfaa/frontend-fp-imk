@@ -16,6 +16,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useRegister } from "./hooks/useRegister";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -26,9 +29,54 @@ export default function RegisterPage() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
+  const { register, loading, error } = useRegister();
+  const router = useRouter();
+  const { toast } = useToast();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (
+      !username ||
+      !password ||
+      !email ||
+      !address ||
+      !firstName ||
+      !lastName ||
+      !phone
+    ) {
+      alert("Semua field harus diisi");
+      return;
+    }
+
+    const response = await register(
+      username,
+      password,
+      email,
+      address,
+      firstName,
+      lastName,
+      phone
+    );
+
+    if (response.success) {
+      toast({
+        title: "Berhasil",
+        description: response.message,
+        variant: "default",
+      });
+      router.push("/login");
+    } else {
+      toast({
+        title: "Gagal",
+        description: response.message,
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -41,7 +89,7 @@ export default function RegisterPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form onSubmit={handleRegister}>
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Username</Label>
@@ -181,10 +229,12 @@ export default function RegisterPage() {
 
               <Button
                 type="submit"
+                disabled={loading}
                 className="w-full bg-green-600 hover:bg-green-700"
               >
-                Daftar
+                {loading ? "Memproses..." : "Daftar"}
               </Button>
+              {error && <p className="text-sm text-red-600">{error}</p>}
             </div>
           </form>
         </CardContent>
