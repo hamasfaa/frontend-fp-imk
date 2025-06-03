@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Eye, EyeOff, Mail, Lock, User, Phone } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User, Phone, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Card,
   CardContent,
@@ -18,6 +19,13 @@ import {
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [address, setAddress] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [phone, setPhone] = useState("");
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -36,14 +44,48 @@ export default function RegisterPage() {
           <form>
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Nama Lengkap</Label>
+                <Label htmlFor="name">Username</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                   <Input
-                    id="name"
-                    placeholder="Nama lengkap"
+                    type="text"
+                    placeholder="Username"
                     className="pl-10"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                   />
+                </div>
+              </div>
+
+              <div className="md:flex md:space-x-4 space-y-4 md:space-y-0">
+                <div className="space-y-2 w-full">
+                  <Label htmlFor="firstName">Nama Depan</Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                    <Input
+                      id="firstName"
+                      type="text"
+                      placeholder="Nama Depan"
+                      className="pl-10"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2 w-full">
+                  <Label htmlFor="lastName">Nama Belakang</Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                    <Input
+                      id="lastName"
+                      type="text"
+                      placeholder="Nama Belakang"
+                      className="pl-10"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -54,8 +96,10 @@ export default function RegisterPage() {
                   <Input
                     id="email"
                     type="email"
+                    value={email}
                     placeholder="nama@email.com"
                     className="pl-10"
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
               </div>
@@ -67,8 +111,24 @@ export default function RegisterPage() {
                   <Input
                     id="phone"
                     type="tel"
+                    value={phone}
                     placeholder="08123456789"
                     className="pl-10"
+                    onChange={(e) => setPhone(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="phone">Alamat</Label>
+                <div className="relative">
+                  <Home className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                  <Textarea
+                    id="address"
+                    value={address}
+                    placeholder="Alamat lengkap"
+                    className="pl-10"
+                    onChange={(e) => setAddress(e.target.value)}
                   />
                 </div>
               </div>
@@ -81,7 +141,9 @@ export default function RegisterPage() {
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
+                    value={password}
                     className="pl-10"
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                   <button
                     type="button"
@@ -125,17 +187,6 @@ export default function RegisterPage() {
               </Button>
             </div>
           </form>
-
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t"></div>
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
-                Atau daftar dengan
-              </span>
-            </div>
-          </div>
         </CardContent>
         <CardFooter className="flex flex-col">
           <p className="text-center text-sm text-muted-foreground mt-2">
