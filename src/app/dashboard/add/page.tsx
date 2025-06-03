@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -26,10 +26,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { useAddProduct } from "./hooks/useAddProduct";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function AddProductPage() {
   const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+  const fileRef = useRef<File | null>(null);
+  const { addProduct, loading } = useAddProduct();
   const [images, setImages] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     title: "",
@@ -51,6 +55,8 @@ export default function AddProductPage() {
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
+      fileRef.current = e.target.files[0];
+
       const newImages = Array.from(e.target.files).map((file) =>
         URL.createObjectURL(file)
       );
@@ -60,15 +66,53 @@ export default function AddProductPage() {
 
   const removeImage = (index: number) => {
     setImages((prev) => prev.filter((_, i) => i !== index));
+
+    if (index === 0) {
+      fileRef.current = null;
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    if (!fileRef.current) {
+      toast({
+        title: "Error",
+        description: "Harap upload gambar produk",
+        variant: "destructive",
+      });
+      return;
+    }
 
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      const result = await addProduct(
+        formData.title,
+        formData.category,
+        parseInt(formData.quantity || "0"),
+        parseInt(formData.price || "0"),
+        fileRef.current
+      );
 
-    router.push("/dashboard");
+      if (result.success) {
+        toast({
+          title: "Berhasil",
+          description: result.message || "Produk berhasil ditambahkan",
+          variant: "default",
+        });
+        router.push("/dashboard");
+      } else {
+        toast({
+          title: "Gagal",
+          description: result.message || "Gagal menambahkan produk",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Terjadi kesalahan saat menambahkan produk",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -154,12 +198,12 @@ export default function AddProductPage() {
                         />
                       </div>
                       <div>
-                        <Label htmlFor="price" className="text-base">
+                        <Label htmlFor="quantity" className="text-base">
                           Jumlah <span className="text-red-500">*</span>
                         </Label>
                         <Input
-                          id="price"
-                          name="price"
+                          id="quantity"
+                          name="quantity"
                           type="number"
                           placeholder="0"
                           value={formData.quantity}
@@ -231,9 +275,9 @@ export default function AddProductPage() {
                 <Button
                   type="submit"
                   className="bg-green-600 hover:bg-green-700 min-w-[120px]"
-                  disabled={isSubmitting}
+                  disabled={loading}
                 >
-                  {isSubmitting ? (
+                  {loading ? (
                     <div className="flex items-center">
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
                       <span>Menyimpan...</span>
