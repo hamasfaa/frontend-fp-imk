@@ -7,34 +7,33 @@ export async function setAuthCookies(userData: {
   username: string;
   role: string;
 }) {
+  const isProduction = process.env.NODE_ENV === "production";
+
   (await cookies()).set({
     name: "token",
     value: userData.token,
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
     maxAge: 60 * 60, // 1 jam
     path: "/",
-    sameSite: "strict",
+    sameSite: isProduction ? "none" : "lax",
   });
 
   (await cookies()).set({
     name: "username",
     value: userData.username,
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
     maxAge: 60 * 60,
     path: "/",
-    sameSite: "strict",
+    sameSite: isProduction ? "none" : "lax",
   });
 
   (await cookies()).set({
     name: "role",
     value: userData.role,
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
     maxAge: 60 * 60,
     path: "/",
-    sameSite: "strict",
+    sameSite: isProduction ? "none" : "lax",
   });
 
   return { success: true };
