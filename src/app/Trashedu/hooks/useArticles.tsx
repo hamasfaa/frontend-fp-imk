@@ -1,6 +1,6 @@
 "use client";
 
-import api from "@/lib/api";
+import { jsonRequest } from "@/lib/api";
 import { useState, useEffect } from "react";
 
 export function useArticles() {
@@ -11,13 +11,11 @@ export function useArticles() {
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const response = await api.get("/news");
+        const response = await jsonRequest("/news", "GET");
 
-        console.log("Response status:", response);
         if (!response || response.status !== 200) {
           throw new Error("Gagal mengambil data artikel");
         }
-        console.log("Response data:", response.data);
 
         const data = response.data;
 
@@ -32,7 +30,6 @@ export function useArticles() {
           link: item.link,
         }));
         setArticles(formattedArticles);
-        console.log("Data artikel:", data);
       } catch (error) {
         console.error("Error fetching articles:", error);
         setError(error instanceof Error ? error.message : "Terjadi kesalahan");
