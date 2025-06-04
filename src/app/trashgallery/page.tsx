@@ -24,81 +24,14 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import ProductCard from "@/components/product-card";
-
-// Mock data - would normally come from a database
-const products = [
-  {
-    id: "1",
-    title: "Tas Daur Ulang",
-    price: 75000,
-    image: "/placeholder.svg?height=200&width=200",
-    category: "Produk Olahan",
-    seller: "EcoCraft",
-  },
-  {
-    id: "2",
-    title: "Botol Plastik (5kg)",
-    price: 25000,
-    image: "/placeholder.svg?height=200&width=200",
-    category: "Sampah Mentah",
-    seller: "Bank Sampah Sejahtera",
-  },
-  {
-    id: "3",
-    title: "Hiasan Dinding Eco",
-    price: 120000,
-    image: "/placeholder.svg?height=200&width=200",
-    category: "Produk Olahan",
-    seller: "GreenArt",
-  },
-  {
-    id: "4",
-    title: "Kardus Bekas (10kg)",
-    price: 30000,
-    image: "/placeholder.svg?height=200&width=200",
-    category: "Sampah Mentah",
-    seller: "Recycle Center",
-  },
-  {
-    id: "5",
-    title: "Pot Tanaman dari Botol",
-    price: 45000,
-    image: "/placeholder.svg?height=200&width=200",
-    category: "Produk Olahan",
-    seller: "PlantCycle",
-  },
-  {
-    id: "6",
-    title: "Kertas Bekas (3kg)",
-    price: 15000,
-    image: "/placeholder.svg?height=200&width=200",
-    category: "Sampah Mentah",
-    seller: "PaperBank",
-  },
-  {
-    id: "7",
-    title: "Lampu Hias Daur Ulang",
-    price: 150000,
-    image: "/placeholder.svg?height=200&width=200",
-    category: "Produk Olahan",
-    seller: "LightCraft",
-  },
-  {
-    id: "8",
-    title: "Kaleng Aluminium (2kg)",
-    price: 40000,
-    image: "/placeholder.svg?height=200&width=200",
-    category: "Sampah Mentah",
-    seller: "MetalRecycle",
-  },
-];
+import { useProducts } from "./hooks/useProducts";
 
 export default function ProductsPage() {
   const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
+  const { products, loading, error } = useProducts();
 
-  // Read category from URL parameters on initial load
   useEffect(() => {
     const categoryParam = searchParams.get("category");
     if (categoryParam && !activeFilters.includes(categoryParam)) {
@@ -106,13 +39,27 @@ export default function ProductsPage() {
     }
   }, [searchParams]);
 
-  const filteredProducts = products.filter((product) => {
-    // Search filter
-    const matchesSearch =
-      product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.seller.toLowerCase().includes(searchQuery.toLowerCase());
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8 text-center">
+        <p>Memuat produk...</p>
+      </div>
+    );
+  }
 
-    // Category filter
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8 text-center text-red-500">
+        <p>Error: {error}. Gagal memuat produk.</p>
+      </div>
+    );
+  }
+
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch =
+      product.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.seller?.toLowerCase().includes(searchQuery.toLowerCase());
+
     const matchesCategory =
       activeFilters.length === 0 || activeFilters.includes(product.category);
 
@@ -212,30 +159,6 @@ export default function ProductsPage() {
                     <Input placeholder="Min" type="number" />
                     <span>-</span>
                     <Input placeholder="Max" type="number" />
-                  </div>
-                </div>
-
-                <div className="mb-6">
-                  <h3 className="font-medium mb-3">Material</h3>
-                  <div className="space-y-2">
-                    {[
-                      "Plastik",
-                      "Kertas",
-                      "Logam",
-                      "Kaca",
-                      "Organik",
-                      "Elektronik",
-                    ].map((material) => (
-                      <div
-                        key={material}
-                        className="flex items-center space-x-2"
-                      >
-                        <Checkbox id={`material-${material}`} />
-                        <Label htmlFor={`material-${material}`}>
-                          {material}
-                        </Label>
-                      </div>
-                    ))}
                   </div>
                 </div>
               </div>
