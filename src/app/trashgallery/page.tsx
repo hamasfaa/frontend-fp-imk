@@ -30,6 +30,7 @@ export default function ProductsPage() {
   const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
+  const [sortOption, setSortOption] = useState("newest");
   const { products, loading, error } = useProducts();
 
   useEffect(() => {
@@ -66,6 +67,22 @@ export default function ProductsPage() {
     return matchesSearch && matchesCategory;
   });
 
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    switch (sortOption) {
+      case "newest":
+        return (
+          new Date(b.createdAt || 0).getTime() -
+          new Date(a.createdAt || 0).getTime()
+        );
+      case "price-low":
+        return a.price - b.price;
+      case "price-high":
+        return b.price - a.price;
+      default:
+        return 0;
+    }
+  });
+
   const toggleFilter = (filter: string) => {
     if (activeFilters.includes(filter)) {
       setActiveFilters(activeFilters.filter((f) => f !== filter));
@@ -100,7 +117,10 @@ export default function ProductsPage() {
         </div>
 
         <div className="flex gap-2">
-          <Select defaultValue="newest">
+          <Select
+            value={sortOption}
+            onValueChange={(value) => setSortOption(value as SortOption)}
+          >
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Urutkan" />
             </SelectTrigger>
@@ -110,7 +130,6 @@ export default function ProductsPage() {
               <SelectItem value="price-high">
                 Harga: Tinggi ke Rendah
               </SelectItem>
-              <SelectItem value="popular">Terpopuler</SelectItem>
             </SelectContent>
           </Select>
 
@@ -203,9 +222,9 @@ export default function ProductsPage() {
         </div>
       )}
 
-      {filteredProducts.length > 0 ? (
+      {sortedProducts.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredProducts.map((product) => (
+          {sortedProducts.map((product) => (
             <ProductCard
               key={product.id}
               id={product.id}
