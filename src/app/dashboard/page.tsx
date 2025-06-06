@@ -21,9 +21,41 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { useMyProducts } from "./hooks/useMyProducts";
+import { useMemo } from "react";
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("overview");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const { products, loading, error } = useMyProducts();
+
+  const filteredProducts = useMemo(() => {
+    return products.filter((product) => {
+      const matchesSearch = product.title
+        ?.toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      const matchesCategory =
+        categoryFilter === "all" || product.category === categoryFilter;
+      return matchesSearch && matchesCategory;
+    });
+  }, [products, searchQuery, categoryFilter]);
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8 text-center">
+        <p>Memuat produk...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8 text-center text-red-500">
+        <p>Error: {error}. Gagal memuat produk.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -142,6 +174,8 @@ export default function DashboardPage() {
                       <div className="w-full md:w-[200px]">
                         <Input
                           placeholder="Cari produk..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
                           className="w-full"
                         />
                       </div>
@@ -153,13 +187,31 @@ export default function DashboardPage() {
                               variant="outline"
                               className="w-full md:w-auto"
                             >
-                              Kategori
+                              {categoryFilter === "all"
+                                ? "Kategori"
+                                : categoryFilter}
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent>
-                            <DropdownMenuItem>Semua Kategori</DropdownMenuItem>
-                            <DropdownMenuItem>Produk Olahan</DropdownMenuItem>
-                            <DropdownMenuItem>Sampah Mentah</DropdownMenuItem>
+                            <DropdownMenuItem
+                              onSelect={() => setCategoryFilter("all")}
+                            >
+                              Semua Kategori
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onSelect={() =>
+                                setCategoryFilter("Produk Olahan")
+                              }
+                            >
+                              Produk Olahan
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onSelect={() =>
+                                setCategoryFilter("Sampah Mentah")
+                              }
+                            >
+                              Sampah Mentah
+                            </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
 
@@ -175,65 +227,74 @@ export default function DashboardPage() {
                       </div>
                     </div>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {[1, 2, 3, 4, 5, 6].map((product) => (
-                      <Card key={product} className="overflow-hidden">
-                        <div className="relative h-40 w-full">
-                          <Image
-                            src="/placeholder.svg?height=160&width=320"
-                            alt="Product"
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                        <CardContent className="p-4">
-                          <div className="mb-2">
-                            <Badge
-                              variant={
-                                product % 2 === 0 ? "outline" : "default"
+                  {filteredProducts.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {filteredProducts.map((product) => (
+                        <Card key={product.id} className="overflow-hidden">
+                          <div className="relative h-40 w-full">
+                            <Image
+                              src={
+                                product.image ||
+                                "/placeholder.svg?height=160&width=320"
                               }
-                              className={
-                                product % 2 === 0
-                                  ? ""
-                                  : "bg-green-600 hover:bg-green-700"
-                              }
-                            >
-                              {product % 2 === 0
-                                ? "Sampah Mentah"
-                                : "Produk Olahan"}
-                            </Badge>
+                              alt={product.title}
+                              fill
+                              className="object-cover"
+                            />
                           </div>
-                          <h3 className="font-semibold text-lg mb-1">
-                            {product % 2 === 0
-                              ? `Sampah Plastik ${product}kg`
-                              : `Produk Daur Ulang #${product}`}
-                          </h3>
-                          <p className="text-sm text-muted-foreground mb-2">
-                            Stok: {product * 5}
-                          </p>
-                          <p className="font-bold text-lg">
-                            Rp {(product * 25000).toLocaleString("id-ID")}
-                          </p>
-                          <div className="flex gap-2 mt-3">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="flex-1"
-                            >
-                              Edit
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="flex-1"
-                            >
-                              Hapus
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
+                          <CardContent className="p-4">
+                            <div className="mb-2">
+                              <Badge
+                                variant={
+                                  product.category === "Sampah Mentah"
+                                    ? "outline"
+                                    : "default"
+                                }
+                                className={
+                                  product.category === "Sampah Mentah"
+                                    ? ""
+                                    : "bg-green-600 hover:bg-green-700"
+                                }
+                              >
+                                {product.category}
+                              </Badge>
+                            </div>
+                            <h3 className="font-semibold text-lg mb-1">
+                              {product.title}
+                            </h3>
+                            <p className="text-sm text-muted-foreground mb-2">
+                              Stok: {product.stock}
+                            </p>
+                            <p className="font-bold text-lg">
+                              Rp {product.price?.toLocaleString("id-ID")}
+                            </p>
+                            <div className="flex gap-2 mt-3">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="flex-1"
+                              >
+                                Edit
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="flex-1"
+                              >
+                                Hapus
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center p-8">
+                      <p className="text-muted-foreground">
+                        Belum ada produk ditemukan.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             </TabsContent>
