@@ -28,7 +28,22 @@ export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("overview");
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
-  const { products, loading, error } = useMyProducts();
+  const { products, loading, error, deleteMyProduct } = useMyProducts();
+
+  const deleteProduct = async (product) => {
+    if (window.confirm(`Apakah Anda yakin ingin menghapus ${product.title}?`)) {
+      try {
+        const result = await deleteMyProduct(product.id);
+        if (result.success) {
+          alert(`Produk ${product.title} berhasil dihapus`);
+        } else {
+          alert(`Gagal menghapus produk: ${result.error}`);
+        }
+      } catch (err) {
+        alert("Terjadi kesalahan saat menghapus produk");
+      }
+    }
+  };
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
@@ -280,6 +295,7 @@ export default function DashboardPage() {
                                 variant="outline"
                                 size="sm"
                                 className="flex-1"
+                                onClick={() => deleteProduct(product)}
                               >
                                 Hapus
                               </Button>
