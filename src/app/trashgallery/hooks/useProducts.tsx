@@ -17,7 +17,6 @@ export function useProducts() {
           throw new Error("Gagal mengambil data produk");
         }
         const data = response.data;
-        console.log("Data produk:", data);
         const formattedProducts = data.data.map((item, index) => ({
           id: item.id,
           title: item.name,
