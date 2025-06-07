@@ -4,8 +4,6 @@ import { useState, useEffect } from "react";
 import {
   MapPin,
   Navigation,
-  Clock,
-  Phone,
   Info,
   Trash2,
   Search,
@@ -23,8 +21,38 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { GoogleMap, MarkerF, useJsApiLoader } from "@react-google-maps/api";
+import {
+  GoogleMap,
+  useJsApiLoader,
+  MarkerF,
+  InfoWindowF,
+} from "@react-google-maps/api";
 import { useMemo } from "react";
+
+interface TPA {
+  id: string;
+  name: string;
+  address: string;
+  distance: number | null;
+  coordinates: { lat: number; lng: number };
+}
+
+const getDistance = (
+  from: { lat: number; lng: number },
+  to: { lat: number; lng: number }
+) => {
+  const R = 6371; // Radius bumi dalam km
+  const dLat = (to.lat - from.lat) * (Math.PI / 180);
+  const dLng = (to.lng - from.lng) * (Math.PI / 180);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(from.lat * (Math.PI / 180)) *
+      Math.cos(to.lat * (Math.PI / 180)) *
+      Math.sin(dLng / 2) *
+      Math.sin(dLng / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+};
 
 export default function TPATerdekatPage() {
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(
@@ -32,18 +60,19 @@ export default function TPATerdekatPage() {
   );
   const [locationError, setLocationError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingTPA, setIsLoadingTPA] = useState(false);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<"distance" | "name">("distance");
+  const [allTpa, setAllTpa] = useState<TPA[]>([]);
+  const [filteredTpa, setFilteredTpa] = useState<TPA[]>([]);
   const [selectedTPA, setSelectedTPA] = useState<number | null>(null);
 
   const { isLoaded, loadError } = useJsApiLoader({
-    googleMapsApiKey:
-      process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ||
-      "AIzaSyAsMgD7L2M54sa1tAZk0dEN2zuP-EOccr8",
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
     libraries: ["places"],
   });
 
-  // Mendapatkan lokasi pengguna saat komponen dimuat
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -68,29 +97,67 @@ export default function TPATerdekatPage() {
     }
   }, []);
 
-  // useEffect(() => {
-  //   let filteredTPA = [...tpaData];
+  useEffect(() => {
+    if (isLoaded && location) {
+      setIsLoadingTPA(true);
+      const service = new google.maps.places.PlacesService(
+        document.createElement("div")
+      );
 
-  //   // Filter berdasarkan pencarian
-  //   if (searchQuery) {
-  //     filteredTPA = filteredTPA.filter(
-  //       (tpa) =>
-  //         tpa.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  //         tpa.address.toLowerCase().includes(searchQuery.toLowerCase())
-  //     );
-  //   }
+      const request = {
+        location: location,
+        radius: 10000, // 10km
+        keyword: "Tempat Pembuangan Akhir, TPA, Bank Sampah, Pusat Daur Ulang",
+      };
 
-  //   // Urutkan berdasarkan jarak atau nama
-  //   filteredTPA.sort((a, b) => {
-  //     if (sortBy === "distance") {
-  //       return a.distance - b.distance;
-  //     } else {
-  //       return a.name.localeCompare(b.name);
-  //     }
-  //   });
+      service.nearbySearch(request, (results, status) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+          const tpaResults: TPA[] = results.map((place) => ({
+            id: place.place_id || new Date().toISOString(),
+            name: place.name || "Nama tidak tersedia",
+            address: place.vicinity || "Alamat tidak tersedia",
+            coordinates: {
+              lat: place.geometry?.location?.lat() || 0,
+              lng: place.geometry?.location?.lng() || 0,
+            },
+            distance: place.geometry?.location
+              ? parseFloat(
+                  getDistance(location, {
+                    lat: place.geometry.location.lat(),
+                    lng: place.geometry.location.lng(),
+                  }).toFixed(1)
+                )
+              : null,
+          }));
+          setAllTpa(tpaResults);
+        } else {
+          console.error("Places API search failed:", status);
+        }
+        setIsLoadingTPA(false);
+      });
+    }
+  }, [isLoaded, location]);
 
-  //   setTpaList(filteredTPA);
-  // }, [searchQuery, sortBy]);
+  useEffect(() => {
+    let results = [...allTpa];
+
+    if (searchQuery) {
+      results = results.filter(
+        (tpa) =>
+          tpa.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          tpa.address.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    results.sort((a, b) => {
+      if (sortBy === "distance") {
+        return (a.distance || 999) - (b.distance || 999);
+      }
+      return a.name.localeCompare(b.name);
+    });
+
+    setFilteredTpa(results);
+  }, [searchQuery, sortBy, allTpa]);
 
   const refreshLocation = () => {
     if (navigator.geolocation) {
@@ -119,6 +186,27 @@ export default function TPATerdekatPage() {
     () => location || { lat: -6.2088, lng: 106.8456 },
     [location]
   );
+
+  const handleMarkerClick = (tpaId: string) => {
+    setSelectedTPA(tpaId);
+  };
+
+  const handleDirectionsClick = (coords: { lat: number; lng: number }) => {
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${coords.lat},${coords.lng}`;
+    window.open(url, "_blank");
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-green-600" />
+          <h3 className="text-lg font-medium">Mendapatkan Lokasi Anda...</h3>
+          <p className="text-muted-foreground">Harap tunggu sebentar</p>
+        </div>
+      </div>
+    );
+  }
 
   if (loadError) {
     return (
@@ -201,58 +289,49 @@ export default function TPATerdekatPage() {
             </TabsTrigger>
           </TabsList>
 
-          {/* <TabsContent value="list">
-            {tpaList.length > 0 ? (
+          <TabsContent value="list">
+            {isLoadingTPA ? (
+              <div className="text-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-green-600" />
+                <h3 className="text-lg font-medium">Mencari TPA Terdekat...</h3>
+              </div>
+            ) : filteredTpa.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {tpaList.map((tpa) => (
+                {filteredTpa.map((tpa) => (
                   <Card
                     key={tpa.id}
-                    className={`overflow-hidden transition-all hover:shadow-md ${
+                    className={`overflow-hidden transition-all hover:shadow-lg cursor-pointer ${
                       selectedTPA === tpa.id ? "ring-2 ring-green-600" : ""
                     }`}
-                    onClick={() => setSelectedTPA(tpa.id)}
+                    onClick={() => handleMarkerClick(tpa.id)}
                   >
                     <CardHeader className="p-4 pb-2">
                       <div className="flex justify-between items-start">
-                        <div>
-                          <CardTitle className="text-lg">{tpa.name}</CardTitle>
-                          <CardDescription className="flex items-center mt-1">
-                            <MapPin className="h-3.5 w-3.5 mr-1 text-muted-foreground" />
-                            {tpa.address}
-                          </CardDescription>
-                        </div>
-                        <Badge className="bg-green-600">
-                          {tpa.distance} km
-                        </Badge>
+                        <CardTitle className="text-lg">{tpa.name}</CardTitle>
+                        {tpa.distance !== null && (
+                          <Badge className="bg-green-600 shrink-0 ml-2">
+                            {tpa.distance} km
+                          </Badge>
+                        )}
                       </div>
+                      <CardDescription className="flex items-start pt-1">
+                        <MapPin className="h-3.5 w-3.5 mr-1.5 mt-0.5 text-muted-foreground shrink-0" />
+                        <span className="break-words">{tpa.address}</span>
+                      </CardDescription>
                     </CardHeader>
                     <CardContent className="p-4 pt-2">
-                      <div className="space-y-3">
-                        <div className="flex items-center text-sm">
-                          <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
-                          <span>{tpa.operationalHours}</span>
-                        </div>
-                        <div className="flex items-center text-sm">
-                          <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
-                          <span>{tpa.phone}</span>
-                        </div>
-                        <div className="pt-2 flex justify-between">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="text-green-600"
-                          >
-                            <Phone className="h-3.5 w-3.5 mr-1.5" />
-                            Hubungi
-                          </Button>
-                          <Button
-                            size="sm"
-                            className="bg-green-600 hover:bg-green-700"
-                          >
-                            <Navigation className="h-3.5 w-3.5 mr-1.5" />
-                            Petunjuk Arah
-                          </Button>
-                        </div>
+                      <div className="pt-2 flex justify-end">
+                        <Button
+                          size="sm"
+                          className="bg-green-600 hover:bg-green-700"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDirectionsClick(tpa.coordinates);
+                          }}
+                        >
+                          <Navigation className="h-3.5 w-3.5 mr-1.5" />
+                          Petunjuk Arah
+                        </Button>
                       </div>
                     </CardContent>
                   </Card>
@@ -261,11 +340,14 @@ export default function TPATerdekatPage() {
             ) : (
               <div className="text-center py-12">
                 <h3 className="text-lg font-medium mb-2">
-                  Tidak ada TPA yang ditemukan
+                  Tidak ada TPA ditemukan
                 </h3>
+                <p className="text-muted-foreground">
+                  Coba perlebar area pencarian atau gunakan kata kunci lain.
+                </p>
               </div>
             )}
-          </TabsContent> */}
+          </TabsContent>
 
           <TabsContent value="map">
             <Card>
@@ -285,6 +367,29 @@ export default function TPATerdekatPage() {
                           }}
                         />
                       )}
+
+                      {filteredTpa.map((tpa) => (
+                        <MarkerF
+                          key={tpa.id}
+                          position={tpa.coordinates}
+                          onClick={() => handleMarkerClick(tpa.id)}
+                        >
+                          {selectedTPA === tpa.id && (
+                            <InfoWindowF
+                              position={tpa.coordinates}
+                              onCloseClick={() => setSelectedTPA(null)}
+                            >
+                              <div className="p-1">
+                                <h4 className="font-bold">{tpa.name}</h4>
+                                <p>{tpa.address}</p>
+                                <p className="font-semibold">
+                                  {tpa.distance} km
+                                </p>
+                              </div>
+                            </InfoWindowF>
+                          )}
+                        </MarkerF>
+                      ))}
                     </GoogleMap>
                   ) : (
                     <div className="flex items-center justify-center h-full">
