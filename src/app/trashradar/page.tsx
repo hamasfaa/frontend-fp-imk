@@ -23,7 +23,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { GoogleMap, useJsApiLoader } from "@react-google-maps/api";
+import { GoogleMap, MarkerF, useJsApiLoader } from "@react-google-maps/api";
 import { useMemo } from "react";
 
 export default function TPATerdekatPage() {
@@ -31,7 +31,7 @@ export default function TPATerdekatPage() {
     null
   );
   const [locationError, setLocationError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<"distance" | "name">("distance");
   const [selectedTPA, setSelectedTPA] = useState<number | null>(null);
@@ -46,7 +46,6 @@ export default function TPATerdekatPage() {
   // Mendapatkan lokasi pengguna saat komponen dimuat
   useEffect(() => {
     if (navigator.geolocation) {
-      setIsLoading(true);
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setLocation({
@@ -58,13 +57,14 @@ export default function TPATerdekatPage() {
         (error) => {
           console.error("Error getting location:", error);
           setLocationError(
-            "Tidak dapat mengakses lokasi Anda. Pastikan GPS diaktifkan dan izin lokasi diberikan."
+            "Tidak dapat mengakses lokasi. Pastikan GPS aktif dan izin diberikan."
           );
           setIsLoading(false);
         }
       );
     } else {
       setLocationError("Browser Anda tidak mendukung geolokasi.");
+      setIsLoading(false);
     }
   }, []);
 
@@ -276,7 +276,16 @@ export default function TPATerdekatPage() {
                       mapContainerClassName="w-full h-full"
                       center={mapCenter}
                       zoom={14}
-                    ></GoogleMap>
+                    >
+                      {location && (
+                        <MarkerF
+                          position={location}
+                          icon={{
+                            url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+                          }}
+                        />
+                      )}
+                    </GoogleMap>
                   ) : (
                     <div className="flex items-center justify-center h-full">
                       <Loader2 className="h-8 w-8 animate-spin text-green-600" />
