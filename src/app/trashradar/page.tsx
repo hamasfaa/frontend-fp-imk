@@ -9,6 +9,7 @@ import {
   Info,
   Trash2,
   Search,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,76 +23,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-
-// Data TPA (Tempat Pembuangan Akhir) - dalam aplikasi nyata ini akan diambil dari API
-const tpaData = [
-  {
-    id: 1,
-    name: "TPA Bantar Gebang",
-    address: "Jl. Raya Bantar Gebang, Bekasi, Jawa Barat",
-    distance: 5.2,
-    phone: "021-12345678",
-    operationalHours: "07:00 - 18:00",
-    coordinates: { lat: -6.2088, lng: 106.9975 },
-    description:
-      "TPA terbesar di area Jabodetabek yang menerima berbagai jenis sampah rumah tangga dan komersial.",
-  },
-  {
-    id: 2,
-    name: "Bank Sampah Melati",
-    address: "Jl. Melati No. 45, Jakarta Selatan",
-    distance: 2.8,
-    phone: "021-87654321",
-    operationalHours: "08:00 - 16:00",
-    coordinates: { lat: -6.2601, lng: 106.8113 },
-    description:
-      "Bank sampah yang menerima sampah anorganik dan memberikan kompensasi berupa uang atau poin.",
-  },
-  {
-    id: 3,
-    name: "Pusat Daur Ulang Hijau",
-    address: "Jl. Daur Ulang No. 12, Jakarta Timur",
-    distance: 3.5,
-    phone: "021-55667788",
-    operationalHours: "08:00 - 17:00",
-    coordinates: { lat: -6.2251, lng: 106.9005 },
-    description:
-      "Pusat daur ulang yang fokus pada pengolahan sampah plastik dan kertas menjadi produk baru.",
-  },
-  {
-    id: 4,
-    name: "TPA Rawa Kucing",
-    address: "Jl. Rawa Kucing, Tangerang",
-    distance: 8.7,
-    phone: "021-99887766",
-    operationalHours: "06:00 - 18:00",
-    coordinates: { lat: -6.1781, lng: 106.63 },
-    description:
-      "TPA yang melayani area Tangerang dan sekitarnya dengan sistem pengolahan sampah terpadu.",
-  },
-  {
-    id: 5,
-    name: "Pusat Daur Ulang Elektronik",
-    address: "Jl. Elektronik No. 78, Jakarta Barat",
-    distance: 4.3,
-    phone: "021-11223344",
-    operationalHours: "09:00 - 16:00",
-    coordinates: { lat: -6.1754, lng: 106.769 },
-    description:
-      "Pusat daur ulang khusus untuk limbah elektronik dan baterai dengan penanganan khusus.",
-  },
-  {
-    id: 6,
-    name: "Bank Sampah Mandiri",
-    address: "Jl. Mandiri No. 23, Depok",
-    distance: 7.1,
-    phone: "021-44332211",
-    operationalHours: "08:00 - 15:00",
-    coordinates: { lat: -6.4025, lng: 106.7942 },
-    description:
-      "Bank sampah yang dikelola oleh komunitas lokal dengan sistem tabungan sampah.",
-  },
-];
+import { GoogleMap, useJsApiLoader } from "@react-google-maps/api";
+import { useMemo } from "react";
 
 export default function TPATerdekatPage() {
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(
@@ -101,8 +34,14 @@ export default function TPATerdekatPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<"distance" | "name">("distance");
-  const [tpaList, setTpaList] = useState(tpaData);
   const [selectedTPA, setSelectedTPA] = useState<number | null>(null);
+
+  const { isLoaded, loadError } = useJsApiLoader({
+    googleMapsApiKey:
+      process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ||
+      "AIzaSyAsMgD7L2M54sa1tAZk0dEN2zuP-EOccr8",
+    libraries: ["places"],
+  });
 
   // Mendapatkan lokasi pengguna saat komponen dimuat
   useEffect(() => {
@@ -129,30 +68,29 @@ export default function TPATerdekatPage() {
     }
   }, []);
 
-  // Filter dan urutkan TPA berdasarkan pencarian, filter, dan pengurutan
-  useEffect(() => {
-    let filteredTPA = [...tpaData];
+  // useEffect(() => {
+  //   let filteredTPA = [...tpaData];
 
-    // Filter berdasarkan pencarian
-    if (searchQuery) {
-      filteredTPA = filteredTPA.filter(
-        (tpa) =>
-          tpa.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          tpa.address.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
+  //   // Filter berdasarkan pencarian
+  //   if (searchQuery) {
+  //     filteredTPA = filteredTPA.filter(
+  //       (tpa) =>
+  //         tpa.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //         tpa.address.toLowerCase().includes(searchQuery.toLowerCase())
+  //     );
+  //   }
 
-    // Urutkan berdasarkan jarak atau nama
-    filteredTPA.sort((a, b) => {
-      if (sortBy === "distance") {
-        return a.distance - b.distance;
-      } else {
-        return a.name.localeCompare(b.name);
-      }
-    });
+  //   // Urutkan berdasarkan jarak atau nama
+  //   filteredTPA.sort((a, b) => {
+  //     if (sortBy === "distance") {
+  //       return a.distance - b.distance;
+  //     } else {
+  //       return a.name.localeCompare(b.name);
+  //     }
+  //   });
 
-    setTpaList(filteredTPA);
-  }, [searchQuery, sortBy]);
+  //   setTpaList(filteredTPA);
+  // }, [searchQuery, sortBy]);
 
   const refreshLocation = () => {
     if (navigator.geolocation) {
@@ -176,6 +114,24 @@ export default function TPATerdekatPage() {
       );
     }
   };
+
+  const mapCenter = useMemo(
+    () => location || { lat: -6.2088, lng: 106.8456 },
+    [location]
+  );
+
+  if (loadError) {
+    return (
+      <Alert variant="destructive" className="m-4">
+        <Info className="h-4 w-4" />
+        <AlertTitle>Kesalahan Peta</AlertTitle>
+        <AlertDescription>
+          Gagal memuat Google Maps. Pastikan API Key valid dan koneksi internet
+          stabil.
+        </AlertDescription>
+      </Alert>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -245,7 +201,7 @@ export default function TPATerdekatPage() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="list">
+          {/* <TabsContent value="list">
             {tpaList.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {tpaList.map((tpa) => (
@@ -309,77 +265,26 @@ export default function TPATerdekatPage() {
                 </h3>
               </div>
             )}
-          </TabsContent>
+          </TabsContent> */}
 
           <TabsContent value="map">
             <Card>
               <CardContent className="p-0">
                 <div className="relative w-full h-[500px] bg-muted rounded-md overflow-hidden">
-                  {/* Di sini akan ditampilkan peta menggunakan Google Maps atau library peta lainnya */}
-                  <div className="absolute inset-0 flex items-center justify-center flex-col">
-                    <MapPin className="h-8 w-8 text-muted-foreground mb-2" />
-                    <p className="text-muted-foreground text-center px-4">
-                      Peta akan ditampilkan di sini dengan lokasi TPA terdekat.{" "}
-                      <br />
-                      Dalam implementasi nyata, gunakan Google Maps API atau
-                      library peta lainnya.
-                    </p>
-                  </div>
+                  {isLoaded ? (
+                    <GoogleMap
+                      mapContainerClassName="w-full h-full"
+                      center={mapCenter}
+                      zoom={14}
+                    ></GoogleMap>
+                  ) : (
+                    <div className="flex items-center justify-center h-full">
+                      <Loader2 className="h-8 w-8 animate-spin text-green-600" />
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
-
-            {selectedTPA && (
-              <Card className="mt-6">
-                <CardHeader className="p-4 pb-2">
-                  <CardTitle>
-                    {tpaData.find((tpa) => tpa.id === selectedTPA)?.name}
-                  </CardTitle>
-                  <CardDescription>
-                    {tpaData.find((tpa) => tpa.id === selectedTPA)?.address} •{" "}
-                    {tpaData.find((tpa) => tpa.id === selectedTPA)?.distance} km
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="p-4 pt-2">
-                  <p className="text-sm mb-4">
-                    {tpaData.find((tpa) => tpa.id === selectedTPA)?.description}
-                  </p>
-                  <div className="space-y-3">
-                    <div className="flex items-center text-sm">
-                      <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
-                      <span>
-                        Jam Operasional:{" "}
-                        {
-                          tpaData.find((tpa) => tpa.id === selectedTPA)
-                            ?.operationalHours
-                        }
-                      </span>
-                    </div>
-                    <div className="flex items-center text-sm">
-                      <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
-                      <span>
-                        Telepon:{" "}
-                        {tpaData.find((tpa) => tpa.id === selectedTPA)?.phone}
-                      </span>
-                    </div>
-                    <div className="pt-2 flex justify-between">
-                      <Button variant="outline" className="text-green-600">
-                        <Phone className="h-4 w-4 mr-2" />
-                        Hubungi
-                      </Button>
-                      <Button className="bg-green-600 hover:bg-green-700">
-                        {" "}
-                        Hubungi
-                      </Button>
-                      <Button className="bg-green-600 hover:bg-green-700">
-                        <Navigation className="h-4 w-4 mr-2" />
-                        Petunjuk Arah
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
           </TabsContent>
         </Tabs>
       )}
