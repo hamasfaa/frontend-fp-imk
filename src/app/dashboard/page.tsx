@@ -289,7 +289,9 @@ export default function DashboardPage() {
                                 size="sm"
                                 className="flex-1"
                               >
-                                Edit
+                                <Link href={`/dashboard/update/${product.id}`}>
+                                  Edit
+                                </Link>
                               </Button>
                               <Button
                                 variant="outline"
