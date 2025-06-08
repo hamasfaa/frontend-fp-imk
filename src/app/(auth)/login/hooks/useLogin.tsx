@@ -22,7 +22,6 @@ export function useLogin() {
 
       if (data.code === 200 && data.data?.token) {
         await setAuthCookies({
-          token: data.data.token,
           username: data.data.username,
           role: data.data.role[0].role,
         });
