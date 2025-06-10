@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/sheet";
 import ProductCard from "@/components/product-card";
 import { useProducts } from "./hooks/useProducts";
+import { useCart } from "../cart/hooks/useCart";
 
 export default function ProductsPage() {
   const searchParams = useSearchParams();
@@ -32,6 +33,7 @@ export default function ProductsPage() {
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [sortOption, setSortOption] = useState("newest");
   const { products, loading, error } = useProducts();
+  const { cart, loadingCart, errorCart, addToCart } = useCart();
 
   useEffect(() => {
     const categoryParam = searchParams.get("category");

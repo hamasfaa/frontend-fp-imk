@@ -7,6 +7,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { useCart } from "@/app/cart/hooks/useCart";
 
 interface ProductCardProps {
   id: string;
@@ -26,6 +27,7 @@ export default function ProductCard({
   seller,
 }: ProductCardProps) {
   const [isLiked, setIsLiked] = useState(false);
+  const { cart, loadingCart, errorCart, addToCart } = useCart();
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("id-ID", {
@@ -101,7 +103,10 @@ export default function ProductCard({
       </CardContent>
 
       <CardFooter className="p-4 pt-0">
-        <Button className="w-full bg-green-600 hover:bg-green-700 rounded-lg elegant-button">
+        <Button
+          className="w-full bg-green-600 hover:bg-green-700 rounded-lg elegant-button"
+          onClick={() => addToCart(id)}
+        >
           <ShoppingCart className="h-4 w-4 mr-2" />
           Tambah ke Keranjang
         </Button>

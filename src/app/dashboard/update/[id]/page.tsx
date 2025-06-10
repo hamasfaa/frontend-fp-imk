@@ -51,7 +51,6 @@ export default function UpdateProductPage() {
 
   useEffect(() => {
     if (product) {
-      console.log("SELECT VALUE DARI BACKEND:", product.data.category);
       setFormData({
         title: product.data.name || "",
         category: product.data.category || "",
