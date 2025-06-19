@@ -21,7 +21,7 @@ export function useCart() {
       }
       const data = response.data;
       const formattedCart = data.data.items.map((item, index) => ({
-        id: item.id,
+        id: item.product_id,
         title: item.name,
         price: item.price,
         image: item.image || "/placeholder.svg?height=200&width=400",
@@ -66,5 +66,29 @@ export function useCart() {
     }
   };
 
-  return { cart, loading, error, addToCart };
+  const deleteFromCart = async (id: string) => {
+    try {
+      const response = await jsonRequest(`/cart/${id}`, "DELETE");
+      if (!response || response.status !== 200) {
+        throw new Error("Gagal menghapus produk dari keranjang");
+      }
+
+      fetchCart();
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error deleting from cart:", error);
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Terjadi kesalahan saat menghapus produk dari keranjang"
+      );
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : "Terjadi kesalahan",
+      };
+    }
+  };
+
+  return { cart, loading, error, addToCart, deleteFromCart };
 }

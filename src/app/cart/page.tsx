@@ -49,7 +49,7 @@ export default function CartPage() {
   const [cartItems, setCartItems] = useState(initialCartItems);
   const [paymentMethod, setPaymentMethod] = useState("bank_transfer");
   const [shippingMethod, setShippingMethod] = useState("regular");
-  const { cart, loadingCart, errorCart, addToCart } = useCart();
+  const { cart, loadingCart, errorCart, addToCart, deleteFromCart } = useCart();
 
   const updateQuantity = (id: number, newQuantity: number) => {
     if (newQuantity < 1) return;
@@ -61,7 +61,8 @@ export default function CartPage() {
   };
 
   const removeItem = (id: number) => {
-    setCartItems(cartItems.filter((item) => item.id !== id));
+    console.log("Removing item with ID:", id);
+    deleteFromCart(id);
   };
 
   const calculateSubtotal = () => {
