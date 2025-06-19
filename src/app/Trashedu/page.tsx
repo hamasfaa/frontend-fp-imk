@@ -16,8 +16,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useArticles } from "./hooks/useArticles";
 import { useVideos } from "./hooks/useVideos";
+import { useState } from "react";
 
 export default function BeritaPage() {
+  const DISPLAY = 6;
+  const [showAllArticles, setShowAllArticles] = useState(false);
+  const [showAllVideos, setShowAllVideos] = useState(false);
+
   const {
     articles,
     loading: articlesLoading,
@@ -28,6 +33,11 @@ export default function BeritaPage() {
     loading: videosLoading,
     error: videosError,
   } = useVideos("Daur ulang sampah");
+
+  const displayedArticles = showAllArticles
+    ? articles
+    : articles.slice(0, DISPLAY);
+  const displayedVideos = showAllVideos ? videos : videos.slice(0, DISPLAY);
 
   if (articlesLoading) {
     return (
@@ -69,7 +79,7 @@ export default function BeritaPage() {
 
         <TabsContent value="articles">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {articles.map((article) => (
+            {displayedArticles.map((article) => (
               <Card key={article.id} className="overflow-hidden">
                 <div className="relative h-48 w-full">
                   <Image
@@ -114,7 +124,16 @@ export default function BeritaPage() {
             ))}
           </div>
           <div className="text-center mt-8">
-            <Button variant="outline">Lihat Semua Berita</Button>
+            {articles.length > DISPLAY && (
+              <Button
+                variant="outline"
+                onClick={() => setShowAllArticles(!showAllArticles)}
+              >
+                {showAllArticles
+                  ? "Tampilkan Lebih Sedikit"
+                  : "Lihat Semua Berita"}
+              </Button>
+            )}
           </div>
         </TabsContent>
 
@@ -130,7 +149,7 @@ export default function BeritaPage() {
           ) : (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {videos.map((video) => (
+                {displayedVideos.map((video) => (
                   <Card key={video.id} className="overflow-hidden">
                     <div className="relative h-48 w-full group">
                       <Image
@@ -178,7 +197,16 @@ export default function BeritaPage() {
                 ))}
               </div>
               <div className="text-center mt-8">
-                <Button variant="outline">Lihat Semua Video</Button>
+                {videos.length > DISPLAY && (
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowAllVideos(!showAllVideos)}
+                  >
+                    {showAllVideos
+                      ? "Tampilkan Lebih Sedikit"
+                      : "Lihat Semua Video"}
+                  </Button>
+                )}
               </div>
             </>
           )}
