@@ -15,42 +15,21 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useArticles } from "./hooks/useArticles";
-
-// Mock data for videos
-const videos = [
-  {
-    id: 1,
-    title: "Investigasi: Aliran Sampah Plastik dari Kota ke Laut",
-    excerpt:
-      "Dokumenter investigasi yang mengikuti perjalanan sampah plastik dari kota-kota besar hingga berakhir di laut.",
-    thumbnail: "/placeholder.svg?height=200&width=400",
-    duration: "15:24",
-    date: "12 April 2024",
-  },
-  {
-    id: 2,
-    title: "Wawancara Eksklusif dengan Menteri LHK tentang Kebijakan Sampah",
-    excerpt:
-      "Menteri Lingkungan Hidup dan Kehutanan berbicara tentang kebijakan pengelolaan sampah terbaru.",
-    thumbnail: "/placeholder.svg?height=200&width=400",
-    duration: "10:15",
-    date: "8 April 2024",
-  },
-  {
-    id: 3,
-    title: "Liputan Khusus: TPA Bantar Gebang dari Udara",
-    excerpt:
-      "Melihat kondisi terkini TPA terbesar di Indonesia dari pandangan udara dengan drone.",
-    thumbnail: "/placeholder.svg?height=200&width=400",
-    duration: "12:30",
-    date: "3 April 2024",
-  },
-];
+import { useVideos } from "./hooks/useVideos";
 
 export default function BeritaPage() {
-  const { articles, loading, error } = useArticles();
+  const {
+    articles,
+    loading: articlesLoading,
+    error: articlesError,
+  } = useArticles();
+  const {
+    videos,
+    loading: videosLoading,
+    error: videosError,
+  } = useVideos("Daur ulang sampah");
 
-  if (loading) {
+  if (articlesLoading) {
     return (
       <div className="container mx-auto px-4 py-8 text-center">
         <p>Memuat artikel...</p>
@@ -58,10 +37,10 @@ export default function BeritaPage() {
     );
   }
 
-  if (error) {
+  if (articlesError) {
     return (
       <div className="container mx-auto px-4 py-8 text-center text-red-500">
-        <p>Error: {error}. Gagal memuat artikel.</p>
+        <p>Error: {articlesError}. Gagal memuat artikel.</p>
       </div>
     );
   }
@@ -140,51 +119,69 @@ export default function BeritaPage() {
         </TabsContent>
 
         <TabsContent value="videos">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {videos.map((video) => (
-              <Card key={video.id} className="overflow-hidden">
-                <div className="relative h-48 w-full group">
-                  <Image
-                    src={video.thumbnail || "/placeholder.svg"}
-                    alt={video.title}
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="w-12 h-12 rounded-full bg-white/80 flex items-center justify-center">
-                      <Video className="h-6 w-6 text-green-600" />
+          {videosLoading ? (
+            <div className="text-center py-12">
+              <p>Memuat video...</p>
+            </div>
+          ) : videosError ? (
+            <div className="text-center py-12 text-red-500">
+              <p>Error: {videosError}. Gagal memuat video.</p>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {videos.map((video) => (
+                  <Card key={video.id} className="overflow-hidden">
+                    <div className="relative h-48 w-full group">
+                      <Image
+                        src={video.thumbnail || "/placeholder.svg"}
+                        alt={video.title}
+                        fill
+                        className="object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="w-12 h-12 rounded-full bg-white/80 flex items-center justify-center">
+                          <Video className="h-6 w-6 text-green-600" />
+                        </div>
+                      </div>
+                      <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                        {video.duration}
+                      </div>
                     </div>
-                  </div>
-                  <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                    {video.duration}
-                  </div>
-                </div>
-                <CardHeader className="p-4 pb-0">
-                  <CardTitle className="text-xl">{video.title}</CardTitle>
-                  <CardDescription className="text-sm text-muted-foreground">
-                    {video.date}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="p-4 pt-2">
-                  <p className="text-muted-foreground">{video.excerpt}</p>
-                </CardContent>
-                <CardFooter className="p-4 pt-0">
-                  <Link href={`/berita/videos/${video.id}`}>
-                    <Button
-                      variant="ghost"
-                      className="p-0 h-auto text-green-600 hover:text-green-700"
-                    >
-                      Tonton Video
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </Link>
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
-          <div className="text-center mt-8">
-            <Button variant="outline">Lihat Semua Video</Button>
-          </div>
+                    <CardHeader className="p-4 pb-0">
+                      <CardTitle className="text-xl">{video.title}</CardTitle>
+                      <CardDescription className="text-sm text-muted-foreground">
+                        {video.date}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="p-4 pt-2">
+                      <p className="text-muted-foreground line-clamp-2">
+                        {video.excerpt}
+                      </p>
+                    </CardContent>
+                    <CardFooter className="p-4 pt-0">
+                      <Link
+                        href={video.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <Button
+                          variant="ghost"
+                          className="p-0 h-auto text-green-600 hover:text-green-700"
+                        >
+                          Tonton Video
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      </Link>
+                    </CardFooter>
+                  </Card>
+                ))}
+              </div>
+              <div className="text-center mt-8">
+                <Button variant="outline">Lihat Semua Video</Button>
+              </div>
+            </>
+          )}
         </TabsContent>
       </Tabs>
     </div>
