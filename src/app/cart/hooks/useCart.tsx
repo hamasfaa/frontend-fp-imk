@@ -73,7 +73,9 @@ export function useCart() {
         throw new Error("Gagal menghapus produk dari keranjang");
       }
 
-      fetchCart();
+      setCart((prevCart) => prevCart.filter((item) => item.id !== id));
+
+      await fetchCart();
 
       return { success: true };
     } catch (error) {
@@ -90,5 +92,40 @@ export function useCart() {
     }
   };
 
-  return { cart, loading, error, addToCart, deleteFromCart };
+  const updateCart = async (id: string, quantity: number) => {
+    try {
+      const response = await jsonRequest(`/cart/${id}`, "PUT", {
+        quantity: quantity,
+      });
+
+      if (!response || response.status !== 200) {
+        throw new Error("Gagal menambah jumlah produk di keranjang");
+      }
+
+      fetchCart();
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error adding quantity to cart:", error);
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Terjadi kesalahan saat menambah jumlah produk di keranjang"
+      );
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : "Terjadi kesalahan",
+      };
+    }
+  };
+
+  return {
+    cart,
+    loading,
+    error,
+    addToCart,
+    deleteFromCart,
+    updateCart,
+    fetchCart,
+  };
 }

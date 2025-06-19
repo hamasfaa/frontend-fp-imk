@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -25,51 +25,65 @@ import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useCart } from "./hooks/useCart";
-
-const initialCartItems = [
-  {
-    id: 1,
-    name: "Tas Daur Ulang Premium",
-    price: 75000,
-    quantity: 1,
-    image: "/placeholder.svg?height=80&width=80",
-    seller: "EcoCraft",
-  },
-  {
-    id: 2,
-    name: "Hiasan Dinding Eco",
-    price: 120000,
-    quantity: 1,
-    image: "/placeholder.svg?height=80&width=80",
-    seller: "GreenArt",
-  },
-];
+import { useToast } from "@/components/ui/use-toast";
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState(initialCartItems);
   const [paymentMethod, setPaymentMethod] = useState("bank_transfer");
   const [shippingMethod, setShippingMethod] = useState("regular");
-  const { cart, loadingCart, errorCart, addToCart, deleteFromCart } = useCart();
+  const [isDeleting, setIsDeleting] = useState(false);
+  const {
+    cart,
+    loadingCart,
+    errorCart,
+    addToCart,
+    deleteFromCart,
+    updateCart,
+    fetchCart,
+  } = useCart();
+  const { toast } = useToast();
 
-  const updateQuantity = (id: number, newQuantity: number) => {
+  useEffect(() => {
+    fetchCart();
+  }, [fetchCart]);
+
+  const updateQuantity = async (id: number, newQuantity: number) => {
     if (newQuantity < 1) return;
-    setCartItems(
-      cartItems.map((item) =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
-    );
+    try {
+      await updateCart(id, newQuantity);
+      await fetchCart();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Gagal mengubah jumlah item",
+        variant: "destructive",
+      });
+    }
   };
 
-  const removeItem = (id: number) => {
-    console.log("Removing item with ID:", id);
-    deleteFromCart(id);
+  const removeItem = async (id: number) => {
+    try {
+      setIsDeleting(true);
+      await deleteFromCart(id);
+
+      toast({
+        title: "Berhasil",
+        description: "Produk telah dihapus dari keranjang",
+      });
+
+      await fetchCart();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Gagal menghapus item dari keranjang",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const calculateSubtotal = () => {
-    return cartItems.reduce(
-      (total, item) => total + item.price * item.quantity,
-      0
-    );
+    return cart.reduce((total, item) => total + item.price * item.quantity, 0);
   };
 
   const calculateShipping = () => {
@@ -88,6 +102,25 @@ export default function CartPage() {
       maximumFractionDigits: 0,
     }).format(price);
   };
+
+  if (loadingCart) {
+    return (
+      <div className="container mx-auto px-4 py-8 text-center">
+        <p>Memuat keranjang...</p>
+      </div>
+    );
+  }
+
+  if (errorCart) {
+    return (
+      <div className="container mx-auto px-4 py-8 text-center">
+        <p className="text-red-500">Error: {errorCart}</p>
+        <Link href="/trashgallery">
+          <Button className="mt-4">Kembali ke Galeri</Button>
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -292,7 +325,7 @@ export default function CartPage() {
           <p className="text-muted-foreground mb-6">
             Sepertinya Anda belum menambahkan produk apapun ke keranjang.
           </p>
-          <Link href="/products">
+          <Link href="/trashgallery">
             <Button className="bg-green-600 hover:bg-green-700">
               Mulai Belanja
             </Button>
