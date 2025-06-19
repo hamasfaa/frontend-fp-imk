@@ -24,6 +24,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { useCart } from "./hooks/useCart";
 
 const initialCartItems = [
   {
@@ -48,6 +49,7 @@ export default function CartPage() {
   const [cartItems, setCartItems] = useState(initialCartItems);
   const [paymentMethod, setPaymentMethod] = useState("bank_transfer");
   const [shippingMethod, setShippingMethod] = useState("regular");
+  const { cart, loadingCart, errorCart, addToCart } = useCart();
 
   const updateQuantity = (id: number, newQuantity: number) => {
     if (newQuantity < 1) return;
@@ -98,15 +100,15 @@ export default function CartPage() {
 
       <h1 className="text-3xl font-bold mb-8">Keranjang Belanja</h1>
 
-      {cartItems.length > 0 ? (
+      {cart.length > 0 ? (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
             <Card>
               <CardHeader>
-                <CardTitle>Item Keranjang ({cartItems.length})</CardTitle>
+                <CardTitle>Item Keranjang ({cart.length})</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {cartItems.map((item) => (
+                {cart.map((item) => (
                   <div
                     key={item.id}
                     className="flex items-center gap-4 py-4 border-b"
@@ -114,13 +116,13 @@ export default function CartPage() {
                     <div className="relative h-20 w-20 overflow-hidden rounded-md">
                       <Image
                         src={item.image || "/placeholder.svg"}
-                        alt={item.name}
+                        alt={item.title}
                         fill
                         className="object-cover"
                       />
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-medium">{item.name}</h3>
+                      <h3 className="font-medium">{item.title}</h3>
                       <p className="text-sm text-muted-foreground">
                         Penjual: {item.seller}
                       </p>

@@ -20,7 +20,16 @@ export function useCart() {
         throw new Error("Gagal mengambil data keranjang");
       }
       const data = response.data;
-      setCart(data.data);
+      const formattedCart = data.data.items.map((item, index) => ({
+        id: item.id,
+        title: item.name,
+        price: item.price,
+        image: item.image || "/placeholder.svg?height=200&width=400",
+        quantity: item.quantity,
+        seller: item.seller || "Sementara",
+      }));
+
+      setCart(formattedCart);
     } catch (error) {
       console.error("Error fetching cart:", error);
       setError(error instanceof Error ? error.message : "Terjadi kesalahan");
