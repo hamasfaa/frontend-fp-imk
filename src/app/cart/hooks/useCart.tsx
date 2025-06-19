@@ -31,7 +31,7 @@ export function useCart() {
 
   const addToCart = async (product_id: string) => {
     try {
-      const response = await jsonRequest("/cart/add", "POST", {
+      const response = await jsonRequest(`/cart/add/${product_id}`, "POST", {
         product_id,
         quantity: 1,
       });
