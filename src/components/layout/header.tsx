@@ -6,17 +6,13 @@ import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import {
   Menu,
-  X,
-  Search,
-  ShoppingCart,
   User,
   ShoppingBag,
-  Gift,
+  ShoppingCart,
   Settings,
   LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,13 +20,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { logout } from "@/app/actions/auth";
 import { useTransition } from "react";
 
 export default function Header() {
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
@@ -150,122 +144,16 @@ export default function Header() {
           </nav>
         </div>
         <div className="flex items-center gap-2">
-          {isSearchOpen ? (
-            <div className="relative w-full max-w-[300px]">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-              <Input
-                type="search"
-                placeholder="Cari produk..."
-                className="w-full pl-10 pr-10 rounded-full border-green-200 focus:border-green-500"
-                autoFocus
-                onBlur={() => setIsSearchOpen(false)}
-              />
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute right-0 top-0 h-9 w-9 rounded-full"
-                onClick={() => setIsSearchOpen(false)}
-              >
-                <X className="h-4 w-4" />
-                <span className="sr-only">Close search</span>
-              </Button>
-            </div>
-          ) : (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full"
-              onClick={() => setIsSearchOpen(true)}
-            >
-              <Search className="h-5 w-5" />
-              <span className="sr-only">Search</span>
-            </Button>
-          )}
-
-          <Link href="/reward">
+          <Link href="/cart">
             <Button
               variant="ghost"
               size="icon"
               className="relative rounded-full"
             >
-              <Gift className="h-5 w-5" />
-              <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-green-600 rounded-full">
-                250
-              </Badge>
-              <span className="sr-only">Reward points</span>
+              <ShoppingCart className="h-5 w-5" />
             </Button>
           </Link>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="relative rounded-full"
-              >
-                <ShoppingCart className="h-5 w-5" />
-                <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-green-600 rounded-full">
-                  2
-                </Badge>
-                <span className="sr-only">Shopping cart</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              className="w-80 glass-card border-0 rounded-xl p-0 overflow-hidden"
-            >
-              <div className="flex flex-col gap-4 p-4">
-                <div className="flex items-center gap-4">
-                  <div className="relative h-16 w-16 overflow-hidden rounded-xl bg-muted">
-                    <Image
-                      src="/placeholder.svg?height=64&width=64"
-                      alt="Product"
-                      className="object-cover"
-                      width={64}
-                      height={64}
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-medium">Tas Daur Ulang Premium</h4>
-                    <p className="text-sm text-muted-foreground">
-                      1 x Rp 75.000
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="relative h-16 w-16 overflow-hidden rounded-xl bg-muted">
-                    <Image
-                      src="/placeholder.svg?height=64&width=64"
-                      alt="Product"
-                      className="object-cover"
-                      width={64}
-                      height={64}
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-medium">Hiasan Dinding Eco</h4>
-                    <p className="text-sm text-muted-foreground">
-                      1 x Rp 120.000
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between font-medium">
-                  <span>Total</span>
-                  <span>Rp 195.000</span>
-                </div>
-                <div className="flex gap-2">
-                  <Link href="/cart" className="flex-1">
-                    <Button variant="outline" className="w-full rounded-xl">
-                      Lihat Keranjang
-                    </Button>
-                  </Link>
-                  <Button className="flex-1 bg-green-600 hover:bg-green-700 rounded-xl">
-                    Checkout
-                  </Button>
-                </div>
-              </div>
-            </DropdownMenuContent>
-          </DropdownMenu>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="rounded-full">
