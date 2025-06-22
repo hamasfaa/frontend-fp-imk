@@ -24,7 +24,9 @@ export function useMyProducts() {
         id: item.id,
         title: item.name,
         price: item.price,
-        image: item.image || "/placeholder.svg?height=200&width=400",
+        image: item.image_path
+          ? `http://127.0.0.1:8000/${item.image_path.replace(/^\.\/?/, "")}`
+          : "/placeholder.svg?height=200&width=400",
         category: item.category,
         seller: "Sementara",
       }));
