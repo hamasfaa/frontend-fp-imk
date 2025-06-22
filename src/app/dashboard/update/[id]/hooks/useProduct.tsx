@@ -16,8 +16,6 @@ export function useProduct(id: string | null) {
       const response = await jsonRequest(`/product/${id}`, "GET");
       const data = response.data;
 
-      console.log("Fetched product data:", data);
-
       if (data.code !== 200) {
         throw new Error(data.message || "Gagal mengambil data produk");
       }
