@@ -32,6 +32,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useLeaderboard } from "./hooks/useLeaderboard";
+
+const userPoints = 1200; // Poin pengguna, bisa diambil dari state atau context
+const userRank = 5; // Peringkat pengguna, bisa diambil dari state atau
 
 // Data hadiah reward
 const rewards = [
@@ -102,97 +106,17 @@ const rewards = [
   },
 ];
 
-// Data leaderboard
-const leaderboardData = [
-  {
-    id: 1,
-    name: "Budi Santoso",
-    username: "budisantoso",
-    points: 3750,
-    avatar: "/placeholder.svg?height=40&width=40",
-    joinDate: "Januari 2023",
-  },
-  {
-    id: 2,
-    name: "Siti Nurhaliza",
-    username: "sitinurhaliza",
-    points: 3250,
-    avatar: "/placeholder.svg?height=40&width=40",
-    joinDate: "Februari 2023",
-  },
-  {
-    id: 3,
-    name: "Ahmad Dhani",
-    username: "ahmaddhani",
-    points: 2800,
-    avatar: "/placeholder.svg?height=40&width=40",
-    joinDate: "Maret 2023",
-  },
-  {
-    id: 4,
-    name: "Dewi Lestari",
-    username: "dewilestari",
-    points: 2500,
-    avatar: "/placeholder.svg?height=40&width=40",
-    joinDate: "April 2023",
-  },
-  {
-    id: 5,
-    name: "Rudi Hartono",
-    username: "rudihartono",
-    points: 2250,
-    avatar: "/placeholder.svg?height=40&width=40",
-    joinDate: "Mei 2023",
-  },
-  {
-    id: 6,
-    name: "Rina Marlina",
-    username: "rinamarlina",
-    points: 2000,
-    avatar: "/placeholder.svg?height=40&width=40",
-    joinDate: "Juni 2023",
-  },
-  {
-    id: 7,
-    name: "Doni Salmanan",
-    username: "donisalmanan",
-    points: 1750,
-    avatar: "/placeholder.svg?height=40&width=40",
-    joinDate: "Juli 2023",
-  },
-  {
-    id: 8,
-    name: "Lia Agustina",
-    username: "liaagustina",
-    points: 1500,
-    avatar: "/placeholder.svg?height=40&width=40",
-    joinDate: "Agustus 2023",
-  },
-  {
-    id: 9,
-    name: "Hendra Wijaya",
-    username: "hendrawijaya",
-    points: 1250,
-    avatar: "/placeholder.svg?height=40&width=40",
-    joinDate: "September 2023",
-  },
-  {
-    id: 10,
-    name: "Nina Zatulini",
-    username: "ninazatulini",
-    points: 1000,
-    avatar: "/placeholder.svg?height=40&width=40",
-    joinDate: "Oktober 2023",
-  },
-];
-
 export default function RewardPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortBy, setSortBy] = useState("points-low");
   const [selectedReward, setSelectedReward] = useState<number | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [leaderboardPeriod, setLeaderboardPeriod] = useState("all-time");
+  const {
+    leaderboard,
+    loading: loadingLeaderboard,
+    error: leaderboardError,
+  } = useLeaderboard();
 
   // Filter dan urutkan rewards
   const filteredRewards = rewards
@@ -218,15 +142,6 @@ export default function RewardPage() {
         return a.title.localeCompare(b.title);
       }
     });
-
-  // Filter leaderboard berdasarkan periode dan level
-  const filteredLeaderboard = leaderboardData.sort(
-    (a, b) => b.points - a.points
-  );
-
-  // Total poin pengguna (dalam aplikasi nyata ini akan diambil dari state global atau API)
-  const userPoints = 250;
-  const userRank = 4;
 
   // Fungsi untuk menukarkan poin
   const redeemPoints = (rewardId: number) => {
@@ -431,29 +346,14 @@ export default function RewardPage() {
                   Pengguna dengan poin tertinggi dari aktivitas daur ulang
                 </p>
               </div>
-              <div className="flex flex-col sm:flex-row gap-2">
-                <Select
-                  value={leaderboardPeriod}
-                  onValueChange={setLeaderboardPeriod}
-                >
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Periode" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all-time">Sepanjang Waktu</SelectItem>
-                    <SelectItem value="this-month">Bulan Ini</SelectItem>
-                    <SelectItem value="this-week">Minggu Ini</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
 
             {/* Top 3 Leaderboard */}
             <div className="p-6 bg-green-50">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {filteredLeaderboard.slice(0, 3).map((user, index) => (
+                {leaderboard.slice(0, 3).map((user, index) => (
                   <Card
-                    key={user.id}
+                    key={user.rank}
                     className={`${
                       index === 0
                         ? "md:order-2"
@@ -465,25 +365,27 @@ export default function RewardPage() {
                     <CardContent className="p-6 flex flex-col items-center text-center">
                       <div
                         className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 ${getRankBadgeColor(
-                          index
+                          user.rank - 1
                         )}`}
                       >
-                        {index === 0 ? (
+                        {user.rank - 1 === 0 ? (
                           <Trophy className="h-6 w-6" />
                         ) : (
-                          <span className="text-lg font-bold">{index + 1}</span>
+                          <span className="text-lg font-bold">{user.rank}</span>
                         )}
                       </div>
                       <Avatar className="h-20 w-20 mb-4">
                         <AvatarImage
                           src={user.avatar || "/placeholder.svg"}
-                          alt={user.name}
+                          alt={user.username}
                         />
                         <AvatarFallback>
-                          {user.name.substring(0, 2).toUpperCase()}
+                          {user.firstname.substring(0, 2).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
-                      <h3 className="font-bold text-lg">{user.name}</h3>
+                      <h3 className="font-bold text-lg">
+                        {user.firstname} {user.lastname}
+                      </h3>
                       <p className="text-sm text-muted-foreground mb-2">
                         @{user.username}
                       </p>
@@ -504,22 +406,24 @@ export default function RewardPage() {
                     <th className="text-left p-4 font-medium">Peringkat</th>
                     <th className="text-left p-4 font-medium">Pengguna</th>
                     <th className="text-left p-4 font-medium">Poin</th>
-                    <th className="text-left p-4 font-medium">
-                      Bergabung Sejak
-                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredLeaderboard.map((user, index) => (
-                    <tr key={user.id} className="border-b hover:bg-muted/50">
+                  {leaderboard.map((user, index) => (
+                    <tr
+                      key={user.username}
+                      className="border-b hover:bg-muted/50"
+                    >
                       <td className="p-4">
                         <div className="flex items-center gap-2">
                           <span
                             className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                              index < 3 ? getRankBadgeColor(index) : "bg-muted"
+                              user.rank - 1 < 3
+                                ? getRankBadgeColor(user.rank - 1)
+                                : "bg-muted"
                             }`}
                           >
-                            {index + 1}
+                            {user.rank}
                           </span>
                         </div>
                       </td>
@@ -528,14 +432,16 @@ export default function RewardPage() {
                           <Avatar>
                             <AvatarImage
                               src={user.avatar || "/placeholder.svg"}
-                              alt={user.name}
+                              alt={user.username}
                             />
                             <AvatarFallback>
-                              {user.name.substring(0, 2).toUpperCase()}
+                              {user.firstname.substring(0, 2).toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
                           <div>
-                            <p className="font-medium">{user.name}</p>
+                            <p className="font-medium">
+                              {user.firstname} {user.lastname}
+                            </p>
                             <p className="text-sm text-muted-foreground">
                               @{user.username}
                             </p>
@@ -545,7 +451,6 @@ export default function RewardPage() {
                       <td className="p-4 font-medium">
                         {user.points.toLocaleString()} poin
                       </td>
-                      <td className="p-4">{user.joinDate}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -557,7 +462,7 @@ export default function RewardPage() {
                 <div className="flex items-center gap-2">
                   <Users className="h-5 w-5 text-muted-foreground" />
                   <span className="text-sm text-muted-foreground">
-                    Total {filteredLeaderboard.length} pengguna
+                    Total {leaderboard.length} pengguna
                   </span>
                 </div>
                 <Button variant="outline" size="sm" className="text-sm">
