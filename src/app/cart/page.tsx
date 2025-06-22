@@ -44,7 +44,7 @@ export default function CartPage() {
 
   useEffect(() => {
     fetchCart();
-  }, [fetchCart]);
+  }, []);
 
   const updateQuantity = async (id: number, newQuantity: number) => {
     if (newQuantity < 1) return;
