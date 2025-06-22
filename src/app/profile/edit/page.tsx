@@ -10,7 +10,6 @@ import {
   Mail,
   Phone,
   MapPin,
-  Upload,
   Save,
   Eye,
   EyeOff,
@@ -27,23 +26,21 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { useUpdateProfile } from "./hooks/useEditProfile";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function EditProfilePage() {
-  const { user, loading, error, fetchUser } = useUpdateProfile();
+  const { user, loading, error, updateProfile } = useUpdateProfile();
+  const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
-  const [profileImage, setProfileImage] = useState<string | null>(
-    "/placeholder.svg?height=120&width=120"
-  );
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    email: "budi.santoso@example.com",
-    phone: "081234567890",
-    address:
-      "Jl. Merdeka No. 123, RT 05/RW 02, Kelurahan Sukamaju, Kecamatan Cilodong, Kota Depok, Jawa Barat 16413",
+    email: "",
+    phone: "",
+    address: "",
   });
 
   useEffect(() => {
@@ -56,17 +53,6 @@ export default function EditProfilePage() {
     }
   }, [user]);
 
-  const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setProfileImage(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({
       ...prev,
@@ -76,11 +62,46 @@ export default function EditProfilePage() {
 
   const handleSave = async () => {
     setIsSaving(true);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setIsSaving(false);
 
-    alert("Profil berhasil diperbarui!");
+    try {
+      const result = await updateProfile({
+        email: formData.email,
+        address: formData.address,
+        phone: formData.phone,
+      });
+
+      if (result.success) {
+        toast({
+          title: "Berhasil",
+          description: "Profil berhasil diperbarui",
+          variant: "default",
+        });
+      } else {
+        toast({
+          title: "Gagal",
+          description: result.message || "Gagal memperbarui profil",
+          variant: "destructive",
+        });
+      }
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Terjadi kesalahan saat memperbarui profil",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="w-6 h-6 border-2 border-green-600 border-t-transparent rounded-full animate-spin mr-2"></div>
+        <span>Memuat data profil...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50">
@@ -109,33 +130,20 @@ export default function EditProfilePage() {
               <div className="flex flex-col items-center space-y-4">
                 <div className="relative">
                   <Avatar className="h-32 w-32 border-4 border-white shadow-lg">
-                    <AvatarImage
-                      src={profileImage || "/placeholder.svg"}
-                      alt="Profile"
-                      className="object-cover"
-                    />
                     <AvatarFallback className="text-2xl bg-green-100 text-green-700">
-                      {user?.firstName.substring(0, 2).toUpperCase()}
+                      {user?.firstName?.substring(0, 2).toUpperCase() || "U"}
                     </AvatarFallback>
                   </Avatar>
-                  <label
-                    htmlFor="profile-image"
-                    className="absolute bottom-0 right-0 bg-green-600 hover:bg-green-700 text-white p-2 rounded-full cursor-pointer shadow-lg transition-colors"
-                  >
-                    <Upload className="h-4 w-4" />
-                    <input
-                      id="profile-image"
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={handleProfileImageChange}
-                    />
-                  </label>
                 </div>
-                <p className="text-sm text-gray-500">
-                  Klik ikon untuk mengganti foto profil
-                </p>
               </div>
+
+              {error && (
+                <Alert className="border-red-200 bg-red-50">
+                  <AlertDescription className="text-red-800">
+                    {error}
+                  </AlertDescription>
+                </Alert>
+              )}
 
               <div className="space-y-6">
                 <div className="space-y-2">
@@ -150,7 +158,7 @@ export default function EditProfilePage() {
                   <div className="relative">
                     <Input
                       id="username"
-                      value={user?.username}
+                      value={user?.username || ""}
                       disabled
                       className="bg-gray-50 text-gray-500 cursor-not-allowed"
                     />
@@ -175,7 +183,32 @@ export default function EditProfilePage() {
                   <div className="relative">
                     <Input
                       id="firstName"
-                      value={user?.firstName}
+                      value={user?.firstName || ""}
+                      disabled
+                      className="bg-gray-50 text-gray-500 cursor-not-allowed"
+                    />
+                    <Badge
+                      variant="secondary"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-xs"
+                    >
+                      Tidak dapat diubah
+                    </Badge>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="firstName"
+                    className="flex items-center gap-2 text-gray-700"
+                  >
+                    <User className="h-4 w-4" />
+                    Nama Belakang
+                    <Lock className="h-3 w-3 text-gray-400" />
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="firstName"
+                      value={user?.lastName || ""}
                       disabled
                       className="bg-gray-50 text-gray-500 cursor-not-allowed"
                     />
@@ -311,7 +344,7 @@ export default function EditProfilePage() {
                 </Button>
                 <Button
                   onClick={handleSave}
-                  disabled={isSaving}
+                  disabled={isSaving || loading}
                   className="flex-1 bg-green-600 hover:bg-green-700 text-white"
                 >
                   {isSaving ? (
