@@ -27,5 +27,6 @@ export const config = {
     "/trashgallery",
     "/trashpoin",
     "/trashradar",
+    "/dashboard/:path*",
   ],
 };
