@@ -34,7 +34,7 @@ export default function AddProductPage() {
   const { toast } = useToast();
   const fileRef = useRef<File | null>(null);
   const { addProduct, loading } = useAddProduct();
-  const [images, setImages] = useState<string[]>([]);
+  const [image, setImage] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     title: "",
     category: "",
@@ -57,19 +57,14 @@ export default function AddProductPage() {
     if (e.target.files && e.target.files.length > 0) {
       fileRef.current = e.target.files[0];
 
-      const newImages = Array.from(e.target.files).map((file) =>
-        URL.createObjectURL(file)
-      );
-      setImages((prev) => [...prev, ...newImages]);
+      const imageUrl = URL.createObjectURL(e.target.files[0]);
+      setImage(imageUrl);
     }
   };
 
-  const removeImage = (index: number) => {
-    setImages((prev) => prev.filter((_, i) => i !== index));
-
-    if (index === 0) {
-      fileRef.current = null;
-    }
+  const removeImage = () => {
+    setImage(null);
+    fileRef.current = null;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -218,29 +213,25 @@ export default function AddProductPage() {
                       <Label className="text-base mb-3 block">
                         Foto Produk <span className="text-red-500">*</span>
                       </Label>
-                      <div className="grid grid-cols-5 gap-4">
-                        {images.map((image, index) => (
-                          <div
-                            key={index}
-                            className="relative aspect-square rounded-lg overflow-hidden border"
-                          >
+                      <div className="flex space-x-4">
+                        {image ? (
+                          <div className="relative w-32 h-32 rounded-lg overflow-hidden border">
                             <Image
-                              src={image || "/placeholder.svg"}
-                              alt={`Product image ${index + 1}`}
+                              src={image}
+                              alt="Product image"
                               fill
                               className="object-cover"
                             />
                             <button
                               type="button"
-                              onClick={() => removeImage(index)}
+                              onClick={removeImage}
                               className="absolute top-1 right-1 bg-white/80 rounded-full p-1 hover:bg-white"
                             >
                               <X className="h-4 w-4" />
                             </button>
                           </div>
-                        ))}
-                        {images.length < 5 && (
-                          <label className="aspect-square rounded-lg border-2 border-dashed flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors">
+                        ) : (
+                          <label className="w-32 h-32 rounded-lg border-2 border-dashed flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors">
                             <Upload className="h-6 w-6 text-gray-400 mb-1" />
                             <span className="text-xs text-gray-500">
                               Upload
@@ -250,14 +241,13 @@ export default function AddProductPage() {
                               accept="image/*"
                               className="hidden"
                               onChange={handleImageUpload}
-                              multiple={images.length < 4}
                             />
                           </label>
                         )}
                       </div>
                       <p className="text-xs text-muted-foreground mt-2">
-                        Unggah hingga 5 foto. Format: JPG, PNG. Ukuran maks: 2MB
-                        per foto.
+                        Unggah satu foto produk. Format: JPG, PNG. Ukuran maks:
+                        2MB.
                       </p>
                     </div>
                   </div>
