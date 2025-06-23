@@ -45,18 +45,34 @@ export default function CartPage() {
   }, []);
 
   const handleCheckout = async () => {
+    setIsCheckingOut(true);
     try {
-      setIsCheckingOut(true);
-      await checkout();
-      toast({
-        title: "Berhasil",
-        description: "Pesanan Anda telah dibuat",
-      });
-      setOrderPlaced(true);
+      const result = await checkout();
+
+      if (result.success) {
+        toast({
+          title: "Berhasil",
+          description: "Pesanan Anda telah dibuat",
+        });
+        setOrderPlaced(true);
+      } else {
+        toast({
+          title: "Error",
+          description:
+            result.message || "Gagal membuat pesanan, silakan coba lagi",
+          variant: "destructive",
+        });
+        window.alert(
+          `Error: ${
+            result.errorData || "Gagal membuat pesanan, silakan coba lagi"
+          }`
+        );
+      }
     } catch (error) {
+      console.error("Unexpected checkout error:", error);
       toast({
         title: "Error",
-        description: "Gagal membuat pesanan, silakan coba lagi",
+        description: "Terjadi kesalahan yang tidak terduga",
         variant: "destructive",
       });
     } finally {

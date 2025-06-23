@@ -127,25 +127,38 @@ export function useCart() {
 
       console.log("Checkout response:", response);
 
-      if (!response || response.status !== 200) {
-        throw new Error("Gagal melakukan checkout");
-      }
-
       setCart([]);
       setError(null);
 
       return { success: true };
     } catch (error) {
       console.error("Error during checkout:", error);
-      setError(
-        error instanceof Error
-          ? error.message
-          : "Terjadi kesalahan saat melakukan checkout"
-      );
-      return {
-        success: false,
-        message: error instanceof Error ? error.message : "Terjadi kesalahan",
-      };
+
+      if (error.response) {
+        console.log("Error response data:", error.response.data.data);
+
+        const errorMessage =
+          error.response.data.message || "Gagal melakukan checkout";
+        setError(errorMessage);
+
+        return {
+          success: false,
+          message: errorMessage,
+          errorData: error.response.data.data,
+        };
+      } else if (error.request) {
+        setError("Tidak ada respons dari server");
+        return {
+          success: false,
+          message: "Tidak ada respons dari server",
+        };
+      } else {
+        setError(error.message || "Terjadi kesalahan saat melakukan checkout");
+        return {
+          success: false,
+          message: error.message || "Terjadi kesalahan",
+        };
+      }
     }
   };
 
