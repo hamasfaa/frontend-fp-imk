@@ -22,14 +22,10 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { useCart } from "./hooks/useCart";
 import { useToast } from "@/components/ui/use-toast";
 
 export default function CartPage() {
-  const [paymentMethod, setPaymentMethod] = useState("bank_transfer");
-  const [shippingMethod, setShippingMethod] = useState("regular");
   const [isDeleting, setIsDeleting] = useState(false);
   const {
     cart,
@@ -82,16 +78,8 @@ export default function CartPage() {
     }
   };
 
-  const calculateSubtotal = () => {
-    return cart.reduce((total, item) => total + item.price * item.quantity, 0);
-  };
-
-  const calculateShipping = () => {
-    return shippingMethod === "regular" ? 10000 : 20000;
-  };
-
   const calculateTotal = () => {
-    return calculateSubtotal() + calculateShipping();
+    return cart.reduce((total, item) => total + item.price * item.quantity, 0);
   };
 
   const formatPrice = (price: number) => {
@@ -199,87 +187,6 @@ export default function CartPage() {
                 ))}
               </CardContent>
             </Card>
-
-            <Card className="mt-6">
-              <CardHeader>
-                <CardTitle>Metode Pengiriman</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <RadioGroup
-                  value={shippingMethod}
-                  onValueChange={setShippingMethod}
-                  className="space-y-3"
-                >
-                  <div className="flex items-center justify-between space-x-2 rounded-md border p-4">
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="regular" id="regular" />
-                      <Label
-                        htmlFor="regular"
-                        className="flex items-center gap-2"
-                      >
-                        <Truck className="h-4 w-4" />
-                        Pengiriman Reguler (2-3 hari)
-                      </Label>
-                    </div>
-                    <p className="font-medium">Rp 10.000</p>
-                  </div>
-                  <div className="flex items-center justify-between space-x-2 rounded-md border p-4">
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="express" id="express" />
-                      <Label
-                        htmlFor="express"
-                        className="flex items-center gap-2"
-                      >
-                        <Truck className="h-4 w-4" />
-                        Pengiriman Express (1 hari)
-                      </Label>
-                    </div>
-                    <p className="font-medium">Rp 20.000</p>
-                  </div>
-                </RadioGroup>
-              </CardContent>
-            </Card>
-
-            <Card className="mt-6">
-              <CardHeader>
-                <CardTitle>Metode Pembayaran</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <RadioGroup
-                  value={paymentMethod}
-                  onValueChange={setPaymentMethod}
-                  className="space-y-3"
-                >
-                  <div className="flex items-center space-x-2 rounded-md border p-4">
-                    <RadioGroupItem value="bank_transfer" id="bank_transfer" />
-                    <Label
-                      htmlFor="bank_transfer"
-                      className="flex items-center gap-2"
-                    >
-                      <CreditCard className="h-4 w-4" />
-                      Transfer Bank
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2 rounded-md border p-4">
-                    <RadioGroupItem value="e_wallet" id="e_wallet" />
-                    <Label
-                      htmlFor="e_wallet"
-                      className="flex items-center gap-2"
-                    >
-                      <ShoppingBag className="h-4 w-4" />
-                      E-Wallet
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2 rounded-md border p-4">
-                    <RadioGroupItem value="cod" id="cod" />
-                    <Label htmlFor="cod" className="flex items-center gap-2">
-                      <CreditCard className="h-4 w-4" />
-                      Bayar di Tempat (COD)
-                    </Label>
-                  </div>
-                </RadioGroup>
-              </CardContent>
-            </Card>
           </div>
 
           <div className="lg:col-span-1">
@@ -290,13 +197,7 @@ export default function CartPage() {
               <CardContent className="space-y-4">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span>{formatPrice(calculateSubtotal())}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">
-                    Biaya Pengiriman
-                  </span>
-                  <span>{formatPrice(calculateShipping())}</span>
+                  <span>{formatPrice(calculateTotal())}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Input placeholder="Kode Promo" className="flex-1" />
@@ -310,7 +211,10 @@ export default function CartPage() {
               </CardContent>
               <CardFooter>
                 <Button className="w-full bg-green-600 hover:bg-green-700">
-                  Lanjutkan ke Pembayaran
+                  <div className="flex items-center">
+                    <CreditCard className="h-4 w-4 mr-2" />
+                    <span>Buat Pesanan</span>
+                  </div>
                 </Button>
               </CardFooter>
             </Card>
