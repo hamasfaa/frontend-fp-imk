@@ -121,6 +121,34 @@ export function useCart() {
     }
   };
 
+  const checkout = async () => {
+    try {
+      const response = await jsonRequest("/transaction/checkout", "POST");
+
+      console.log("Checkout response:", response);
+
+      if (!response || response.status !== 200) {
+        throw new Error("Gagal melakukan checkout");
+      }
+
+      setCart([]);
+      setError(null);
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error during checkout:", error);
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Terjadi kesalahan saat melakukan checkout"
+      );
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : "Terjadi kesalahan",
+      };
+    }
+  };
+
   return {
     cart,
     loading,
@@ -129,5 +157,6 @@ export function useCart() {
     deleteFromCart,
     updateCart,
     fetchCart,
+    checkout,
   };
 }

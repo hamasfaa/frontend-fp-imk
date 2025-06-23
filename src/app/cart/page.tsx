@@ -10,7 +10,7 @@ import {
   Minus,
   ShoppingBag,
   CreditCard,
-  Truck,
+  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,6 +27,8 @@ import { useToast } from "@/components/ui/use-toast";
 
 export default function CartPage() {
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [orderPlaced, setOrderPlaced] = useState(false);
   const {
     cart,
     loadingCart,
@@ -35,12 +37,33 @@ export default function CartPage() {
     deleteFromCart,
     updateCart,
     fetchCart,
+    checkout,
   } = useCart();
   const { toast } = useToast();
 
   useEffect(() => {
     fetchCart();
   }, []);
+
+  const handleCheckout = async () => {
+    try {
+      setIsCheckingOut(true);
+      await checkout();
+      toast({
+        title: "Berhasil",
+        description: "Pesanan Anda telah dibuat",
+      });
+      setOrderPlaced(true);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Gagal membuat pesanan, silakan coba lagi",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCheckingOut(false);
+    }
+  };
 
   const updateQuantity = async (id: number, newQuantity: number) => {
     if (newQuantity < 1) return;
@@ -110,6 +133,31 @@ export default function CartPage() {
     );
   }
 
+  if (orderPlaced) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-2xl mx-auto text-center">
+          <div className="bg-green-50 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6">
+            <Check className="h-10 w-10 text-green-600" />
+          </div>
+          <h1 className="text-3xl font-bold mb-4">Pesanan Berhasil Dibuat!</h1>
+          <p className="text-muted-foreground mb-6">
+            Terima kasih atas pesanan Anda.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/dashboard">
+              <Button className="bg-green-600 hover:bg-green-700">
+                Lihat Status Pesanan
+              </Button>
+            </Link>
+            <Link href="/trashgallery">
+              <Button variant="outline">Lanjutkan Belanja</Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="container mx-auto px-4 py-8">
       <Link
@@ -210,10 +258,16 @@ export default function CartPage() {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button className="w-full bg-green-600 hover:bg-green-700">
+                <Button
+                  className="w-full bg-green-600 hover:bg-green-700"
+                  onClick={handleCheckout}
+                  disabled={isCheckingOut}
+                >
                   <div className="flex items-center">
                     <CreditCard className="h-4 w-4 mr-2" />
-                    <span>Buat Pesanan</span>
+                    <span>
+                      {isCheckingOut ? "Memproses..." : "Buat Pesanan"}
+                    </span>
                   </div>
                 </Button>
               </CardFooter>
