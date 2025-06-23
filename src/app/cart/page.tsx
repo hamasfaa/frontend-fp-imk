@@ -20,7 +20,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "./hooks/useCart";
 import { useToast } from "@/components/ui/use-toast";
@@ -246,10 +245,6 @@ export default function CartPage() {
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Subtotal</span>
                   <span>{formatPrice(calculateTotal())}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Input placeholder="Kode Promo" className="flex-1" />
-                  <Button variant="outline">Terapkan</Button>
                 </div>
                 <Separator />
                 <div className="flex justify-between font-bold text-lg">
