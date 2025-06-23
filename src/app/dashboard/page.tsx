@@ -24,6 +24,7 @@ import { Badge } from "@/components/ui/badge";
 import { useMyProducts } from "./hooks/useMyProducts";
 import { useMemo } from "react";
 import { useMyTransactions } from "./hooks/useMyTransactions";
+import { useMyBuys } from "./hooks/useMyBuys";
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -35,6 +36,8 @@ export default function DashboardPage() {
     loading: transactionsLoading,
     error: transactionsError,
   } = useMyTransactions();
+
+  const { buys, loading: buysLoading, error: buysError } = useMyBuys();
 
   const deleteProduct = async (product) => {
     if (window.confirm(`Apakah Anda yakin ingin menghapus ${product.title}?`)) {
@@ -102,6 +105,22 @@ export default function DashboardPage() {
     );
   }
 
+  if (buysLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8 text-center">
+        <p>Memuat pembelian...</p>
+      </div>
+    );
+  }
+
+  if (buysError) {
+    return (
+      <div className="container mx-auto px-4 py-8 text-center text-red-500">
+        <p>Error: {buysError}. Gagal memuat pembelian.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen flex-col">
       <div className="flex flex-1">
@@ -121,7 +140,10 @@ export default function DashboardPage() {
                   Produk
                 </TabsTrigger>
                 <TabsTrigger value="orders" className="inline-flex">
-                  Pesanan
+                  Penjualan
+                </TabsTrigger>
+                <TabsTrigger value="buy" className="inline-flex">
+                  Pembelian
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -379,6 +401,55 @@ export default function DashboardPage() {
                           <div className="flex items-center gap-2">
                             <Badge variant="outline">
                               {transaction.status || "Diproses"}
+                            </Badge>
+                            <Button variant="outline" size="sm">
+                              Detail
+                            </Button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            <TabsContent
+              value="buy"
+              className="h-full flex-col border-none p-0 data-[state=active]:flex"
+            >
+              <Card>
+                <CardHeader>
+                  <CardTitle>Pesanan</CardTitle>
+                  <CardDescription>Kelola semua pesanan Anda</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {buys.length === 0 && (
+                      <p className="text-muted-foreground text-sm">
+                        Belum ada pesanan.
+                      </p>
+                    )}
+
+                    {buys.map((buy, index) => {
+                      return (
+                        <div
+                          key={buy.id}
+                          className="flex items-center gap-4 justify-between border-b pb-4"
+                        >
+                          <div className="flex items-center gap-4">
+                            <div>
+                              <h4 className="font-medium">
+                                Pesanan #{index + 1}
+                              </h4>
+                              <p className="text-sm text-muted-foreground">
+                                {buy.details.length} produk • Rp{" "}
+                                {buy.totalPrice.toLocaleString("id-ID")}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline">
+                              {buy.status || "Diproses"}
                             </Badge>
                             <Button variant="outline" size="sm">
                               Detail
