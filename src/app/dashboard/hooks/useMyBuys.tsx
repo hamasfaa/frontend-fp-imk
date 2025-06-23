@@ -25,6 +25,7 @@ export function useMyBuys() {
       const formattedBuys = data.data.map((transaction) => ({
         id: transaction.id,
         totalPrice: transaction.total_price,
+        status: transaction.status,
         details: transaction.transaction_details.map((detail) => ({
           id: detail.id,
           subTotalPrice: detail.sub_total_price,

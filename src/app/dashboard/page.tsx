@@ -191,13 +191,6 @@ export default function DashboardPage() {
                         .slice(-3)
                         .reverse()
                         .map((transaction, index) => {
-                          const firstProduct = transaction.details[0]?.product;
-                          const imagePath =
-                            firstProduct?.imagePath &&
-                            firstProduct.imagePath !== ""
-                              ? firstProduct.imagePath
-                              : "/placeholder.svg?height=64&width=64";
-
                           return (
                             <div
                               key={transaction.id}
@@ -216,13 +209,20 @@ export default function DashboardPage() {
                               </div>
                               <Badge
                                 variant={
-                                  transaction.status === "Baru"
+                                  transaction.status === "selesai"
+                                    ? "success"
+                                    : transaction.status === "proses"
                                     ? "default"
+                                    : transaction.status === "batal"
+                                    ? "destructive"
                                     : "outline"
                                 }
                                 className="ml-auto"
                               >
-                                {transaction.status || "Diproses"}
+                                {transaction.status
+                                  ? transaction.status.charAt(0).toUpperCase() +
+                                    transaction.status.slice(1)
+                                  : "Diproses"}
                               </Badge>
                             </div>
                           );
@@ -245,13 +245,6 @@ export default function DashboardPage() {
                         .slice(-3)
                         .reverse()
                         .map((buy, index) => {
-                          const firstProduct = buy.details[0]?.product;
-                          const imagePath =
-                            firstProduct?.imagePath &&
-                            firstProduct.imagePath !== ""
-                              ? firstProduct.imagePath
-                              : "/placeholder.svg?height=64&width=64";
-
                           return (
                             <div
                               key={buy.id}
@@ -268,11 +261,20 @@ export default function DashboardPage() {
                               </div>
                               <Badge
                                 variant={
-                                  buy.status === "Baru" ? "default" : "outline"
+                                  buy.status === "selesai"
+                                    ? "success"
+                                    : buy.status === "proses"
+                                    ? "default"
+                                    : buy.status === "batal"
+                                    ? "destructive"
+                                    : "outline"
                                 }
                                 className="ml-auto"
                               >
-                                {buy.status || "Diproses"}
+                                {buy.status
+                                  ? buy.status.charAt(0).toUpperCase() +
+                                    buy.status.slice(1)
+                                  : "Diproses"}
                               </Badge>
                             </div>
                           );
@@ -456,8 +458,22 @@ export default function DashboardPage() {
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
-                            <Badge variant="outline">
-                              {transaction.status || "Diproses"}
+                            <Badge
+                              variant={
+                                transaction.status === "selesai"
+                                  ? "success"
+                                  : transaction.status === "proses"
+                                  ? "default"
+                                  : transaction.status === "batal"
+                                  ? "destructive"
+                                  : "outline"
+                              }
+                              className="ml-auto"
+                            >
+                              {transaction.status
+                                ? transaction.status.charAt(0).toUpperCase() +
+                                  transaction.status.slice(1)
+                                : "Diproses"}
                             </Badge>
                             <Button variant="outline" size="sm">
                               Detail
@@ -505,8 +521,22 @@ export default function DashboardPage() {
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
-                            <Badge variant="outline">
-                              {buy.status || "Diproses"}
+                            <Badge
+                              variant={
+                                buy.status === "selesai"
+                                  ? "success"
+                                  : buy.status === "proses"
+                                  ? "default"
+                                  : buy.status === "batal"
+                                  ? "destructive"
+                                  : "outline"
+                              }
+                              className="ml-auto"
+                            >
+                              {buy.status
+                                ? buy.status.charAt(0).toUpperCase() +
+                                  buy.status.slice(1)
+                                : "Diproses"}
                             </Badge>
                             <Button variant="outline" size="sm">
                               Detail
