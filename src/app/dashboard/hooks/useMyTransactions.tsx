@@ -51,5 +51,37 @@ export function useMyTransactions() {
     }
   };
 
-  return { transactions, loading, error };
+  const updateTransactionStatus = async (id: string, status: string) => {
+    try {
+      setLoading(true);
+      const response = await jsonRequest(
+        `/transaction/${id}?status=${status}`,
+        "PUT"
+      );
+
+      if (!response || response.status !== 200) {
+        throw new Error(`Gagal mengubah status transaksi ke ${status}`);
+      }
+
+      setTransactions((prevTransactions) =>
+        prevTransactions.map((transaction) =>
+          transaction.id === id ? { ...transaction, status } : transaction
+        )
+      );
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error updating transaction status:", error);
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Terjadi kesalahan saat mengubah status"
+      );
+      return { success: false, error };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { transactions, loading, error, updateTransactionStatus };
 }

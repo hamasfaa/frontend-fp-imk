@@ -25,6 +25,13 @@ import { useMyProducts } from "./hooks/useMyProducts";
 import { useMemo } from "react";
 import { useMyTransactions } from "./hooks/useMyTransactions";
 import { useMyBuys } from "./hooks/useMyBuys";
+import {
+  SelectTrigger,
+  SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -35,6 +42,7 @@ export default function DashboardPage() {
     transactions,
     loading: transactionsLoading,
     error: transactionsError,
+    updateTransactionStatus,
   } = useMyTransactions();
 
   const { buys, loading: buysLoading, error: buysError } = useMyBuys();
@@ -458,6 +466,37 @@ export default function DashboardPage() {
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
+                            <Select
+                              defaultValue={transaction.status}
+                              onValueChange={async (newStatus) => {
+                                const result = await updateTransactionStatus(
+                                  transaction.id,
+                                  newStatus
+                                );
+                                if (result.success) {
+                                  toast({
+                                    title: "Status diperbarui",
+                                    description: `Status pesanan berhasil diubah menjadi ${newStatus}`,
+                                  });
+                                } else {
+                                  toast({
+                                    title: "Gagal memperbarui",
+                                    description:
+                                      "Terjadi kesalahan saat mengubah status pesanan",
+                                    variant: "destructive",
+                                  });
+                                }
+                              }}
+                            >
+                              <SelectTrigger className="w-[130px]">
+                                <SelectValue placeholder="Status" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="proses">Proses</SelectItem>
+                                <SelectItem value="selesai">Selesai</SelectItem>
+                                <SelectItem value="batal">Batal</SelectItem>
+                              </SelectContent>
+                            </Select>
                             <Badge
                               variant={
                                 transaction.status === "selesai"
