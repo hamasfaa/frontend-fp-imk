@@ -278,7 +278,7 @@ export default function DashboardPage() {
                               {product.title}
                             </h3>
                             <p className="text-sm text-muted-foreground mb-2">
-                              Stok: {product.stock}
+                              Stok: {product.quantity}
                             </p>
                             <p className="font-bold text-lg">
                               Rp {product.price?.toLocaleString("id-ID")}
