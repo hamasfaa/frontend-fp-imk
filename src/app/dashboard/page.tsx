@@ -23,12 +23,18 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useMyProducts } from "./hooks/useMyProducts";
 import { useMemo } from "react";
+import { useMyTransactions } from "./hooks/useMyTransactions";
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("overview");
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const { products, loading, error, deleteMyProduct } = useMyProducts();
+  const {
+    transactions,
+    loading: transactionsLoading,
+    error: transactionsError,
+  } = useMyTransactions();
 
   const deleteProduct = async (product) => {
     if (window.confirm(`Apakah Anda yakin ingin menghapus ${product.title}?`)) {
@@ -56,6 +62,14 @@ export default function DashboardPage() {
     });
   }, [products, searchQuery, categoryFilter]);
 
+  const totalRevenue = useMemo(() => {
+    return transactions.reduce((sum, tx) => sum + (tx.totalPrice || 0), 0);
+  }, [transactions]);
+
+  const totalOrders = useMemo(() => {
+    return transactions.reduce((count, tx) => count + tx.details.length, 0);
+  }, [transactions]);
+
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8 text-center">
@@ -68,6 +82,22 @@ export default function DashboardPage() {
     return (
       <div className="container mx-auto px-4 py-8 text-center text-red-500">
         <p>Error: {error}. Gagal memuat produk.</p>
+      </div>
+    );
+  }
+
+  if (transactionsLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8 text-center">
+        <p>Memuat transaksi...</p>
+      </div>
+    );
+  }
+
+  if (transactionsError) {
+    return (
+      <div className="container mx-auto px-4 py-8 text-center text-red-500">
+        <p>Error: {transactionsError}. Gagal memuat transaksi.</p>
       </div>
     );
   }
@@ -108,24 +138,20 @@ export default function DashboardPage() {
                     <CreditCard className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">Rp 1.250.000</div>
-                    <p className="text-xs text-muted-foreground">
-                      +20.1% dari bulan lalu
-                    </p>
+                    <div className="text-2xl font-bold">
+                      Rp {totalRevenue.toLocaleString("id-ID")}
+                    </div>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">
-                      Pesanan
+                      Total Pesanan
                     </CardTitle>
                     <ShoppingCart className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">+24</div>
-                    <p className="text-xs text-muted-foreground">
-                      +12.2% dari bulan lalu
-                    </p>
+                    <div className="text-2xl font-bold">{totalOrders}</div>
                   </CardContent>
                 </Card>
               </div>
@@ -327,172 +353,40 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="flex items-center gap-4 justify-between border-b pb-4">
-                      <div className="flex items-center gap-4">
-                        <div className="relative h-16 w-16 overflow-hidden rounded-md">
-                          <Image
-                            src="/placeholder.svg?height=64&width=64"
-                            alt="Product"
-                            fill
-                            className="object-cover"
-                          />
+                    {transactions.length === 0 && (
+                      <p className="text-muted-foreground text-sm">
+                        Belum ada pesanan.
+                      </p>
+                    )}
+
+                    {transactions.map((transaction, index) => {
+                      return (
+                        <div
+                          key={transaction.id}
+                          className="flex items-center gap-4 justify-between border-b pb-4"
+                        >
+                          <div className="flex items-center gap-4">
+                            <div>
+                              <h4 className="font-medium">
+                                Pesanan #{index + 1}
+                              </h4>
+                              <p className="text-sm text-muted-foreground">
+                                {transaction.details.length} produk • Rp{" "}
+                                {transaction.totalPrice.toLocaleString("id-ID")}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline">
+                              {transaction.status || "Diproses"}
+                            </Badge>
+                            <Button variant="outline" size="sm">
+                              Detail
+                            </Button>
+                          </div>
                         </div>
-                        <div>
-                          <h4 className="font-medium">Pesanan #1001</h4>
-                          <p className="text-sm text-muted-foreground">
-                            2 produk • Rp 150.000
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Pembeli: Ahmad Rizki
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge>Baru</Badge>
-                        <Button variant="outline" size="sm">
-                          Detail
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4 justify-between border-b pb-4">
-                      <div className="flex items-center gap-4">
-                        <div className="relative h-16 w-16 overflow-hidden rounded-md">
-                          <Image
-                            src="/placeholder.svg?height=64&width=64"
-                            alt="Product"
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                        <div>
-                          <h4 className="font-medium">Pesanan #1002</h4>
-                          <p className="text-sm text-muted-foreground">
-                            1 produk • Rp 75.000
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Pembeli: Siti Nurhaliza
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline">Diproses</Badge>
-                        <Button variant="outline" size="sm">
-                          Detail
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4 justify-between border-b pb-4">
-                      <div className="flex items-center gap-4">
-                        <div className="relative h-16 w-16 overflow-hidden rounded-md">
-                          <Image
-                            src="/placeholder.svg?height=64&width=64"
-                            alt="Product"
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                        <div>
-                          <h4 className="font-medium">Pesanan #1003</h4>
-                          <p className="text-sm text-muted-foreground">
-                            3 produk • Rp 220.000
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Pembeli: Budi Santoso
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline">Dikirim</Badge>
-                        <Button variant="outline" size="sm">
-                          Detail
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            <TabsContent
-              value="collections"
-              className="h-full flex-col border-none p-0 data-[state=active]:flex"
-            >
-              <Card>
-                <CardHeader>
-                  <CardTitle>Pengambilan Sampah</CardTitle>
-                  <CardDescription>
-                    Kelola permintaan pengambilan sampah
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-4 justify-between border-b pb-4">
-                      <div className="flex items-center gap-4">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-                          <Truck className="h-6 w-6 text-green-600" />
-                        </div>
-                        <div>
-                          <h4 className="font-medium">Pengambilan #501</h4>
-                          <p className="text-sm text-muted-foreground">
-                            Jl. Merdeka No. 123, Jakarta
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Jadwal: 15 April 2024, 08:00-11:00
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge className="bg-amber-500 hover:bg-amber-600">
-                          Menunggu
-                        </Badge>
-                        <Button variant="outline" size="sm">
-                          Detail
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4 justify-between border-b pb-4">
-                      <div className="flex items-center gap-4">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-                          <Truck className="h-6 w-6 text-green-600" />
-                        </div>
-                        <div>
-                          <h4 className="font-medium">Pengambilan #502</h4>
-                          <p className="text-sm text-muted-foreground">
-                            Jl. Sudirman No. 45, Bandung
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Jadwal: 16 April 2024, 12:00-15:00
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline">Dijadwalkan</Badge>
-                        <Button variant="outline" size="sm">
-                          Detail
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4 justify-between border-b pb-4">
-                      <div className="flex items-center gap-4">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-                          <Truck className="h-6 w-6 text-green-600" />
-                        </div>
-                        <div>
-                          <h4 className="font-medium">Pengambilan #503</h4>
-                          <p className="text-sm text-muted-foreground">
-                            Jl. Pahlawan No. 67, Surabaya
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Jadwal: 14 April 2024, 16:00-19:00
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline">Selesai</Badge>
-                        <Button variant="outline" size="sm">
-                          Detail
-                        </Button>
-                      </div>
-                    </div>
+                      );
+                    })}
                   </div>
                 </CardContent>
               </Card>
