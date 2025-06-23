@@ -210,9 +210,9 @@ export default function DashboardPage() {
                               <Badge
                                 variant={
                                   transaction.status === "selesai"
-                                    ? "success"
-                                    : transaction.status === "proses"
                                     ? "default"
+                                    : transaction.status === "proses"
+                                    ? "secondary"
                                     : transaction.status === "batal"
                                     ? "destructive"
                                     : "outline"
@@ -262,9 +262,9 @@ export default function DashboardPage() {
                               <Badge
                                 variant={
                                   buy.status === "selesai"
-                                    ? "success"
-                                    : buy.status === "proses"
                                     ? "default"
+                                    : buy.status === "proses"
+                                    ? "secondary"
                                     : buy.status === "batal"
                                     ? "destructive"
                                     : "outline"
@@ -461,9 +461,9 @@ export default function DashboardPage() {
                             <Badge
                               variant={
                                 transaction.status === "selesai"
-                                  ? "success"
-                                  : transaction.status === "proses"
                                   ? "default"
+                                  : transaction.status === "proses"
+                                  ? "secondary"
                                   : transaction.status === "batal"
                                   ? "destructive"
                                   : "outline"
@@ -524,9 +524,9 @@ export default function DashboardPage() {
                             <Badge
                               variant={
                                 buy.status === "selesai"
-                                  ? "success"
-                                  : buy.status === "proses"
                                   ? "default"
+                                  : buy.status === "proses"
+                                  ? "secondary"
                                   : buy.status === "batal"
                                   ? "destructive"
                                   : "outline"
