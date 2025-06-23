@@ -182,45 +182,102 @@ export default function DashboardPage() {
                   <CardHeader>
                     <CardTitle>Pesanan Terbaru</CardTitle>
                     <CardDescription>
-                      Anda memiliki 3 pesanan yang perlu diproses
+                      Berikut adalah 3 pesanan terbaru Anda
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {[1, 2, 3].map((order) => (
-                        <div key={order} className="flex items-center gap-4">
-                          <div className="relative h-16 w-16 overflow-hidden rounded-md">
-                            <Image
-                              src="/placeholder.svg?height=64&width=64"
-                              alt="Product"
-                              fill
-                              className="object-cover"
-                            />
-                          </div>
-                          <div className="flex-1">
-                            <h4 className="font-medium">
-                              Pesanan #{order + 1000}
-                            </h4>
-                            <p className="text-sm text-muted-foreground">
-                              2 produk • Rp 150.000
-                            </p>
-                          </div>
-                          <Badge
-                            variant={order === 1 ? "default" : "outline"}
-                            className="ml-auto"
-                          >
-                            {order === 1
-                              ? "Baru"
-                              : order === 2
-                              ? "Diproses"
-                              : "Dikirim"}
-                          </Badge>
-                        </div>
-                      ))}
+                      {transactions
+                        .slice(-3)
+                        .reverse()
+                        .map((transaction, index) => {
+                          const firstProduct = transaction.details[0]?.product;
+                          const imagePath =
+                            firstProduct?.imagePath &&
+                            firstProduct.imagePath !== ""
+                              ? firstProduct.imagePath
+                              : "/placeholder.svg?height=64&width=64";
+
+                          return (
+                            <div
+                              key={transaction.id}
+                              className="flex items-center gap-4"
+                            >
+                              <div className="flex-1">
+                                <h4 className="font-medium">
+                                  Pesanan #{transactions.length - index}
+                                </h4>
+                                <p className="text-sm text-muted-foreground">
+                                  {transaction.details.length} produk • Rp{" "}
+                                  {transaction.totalPrice.toLocaleString(
+                                    "id-ID"
+                                  )}
+                                </p>
+                              </div>
+                              <Badge
+                                variant={
+                                  transaction.status === "Baru"
+                                    ? "default"
+                                    : "outline"
+                                }
+                                className="ml-auto"
+                              >
+                                {transaction.status || "Diproses"}
+                              </Badge>
+                            </div>
+                          );
+                        })}
                     </div>
-                    <Button variant="outline" className="mt-4 w-full">
-                      Lihat Semua Pesanan
-                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+              <div className="mt-6">
+                <Card className="col-span-1">
+                  <CardHeader>
+                    <CardTitle>Pembelian Terbaru</CardTitle>
+                    <CardDescription>
+                      Berikut adalah 3 pembelian terbaru Anda
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {buys
+                        .slice(-3)
+                        .reverse()
+                        .map((buy, index) => {
+                          const firstProduct = buy.details[0]?.product;
+                          const imagePath =
+                            firstProduct?.imagePath &&
+                            firstProduct.imagePath !== ""
+                              ? firstProduct.imagePath
+                              : "/placeholder.svg?height=64&width=64";
+
+                          return (
+                            <div
+                              key={buy.id}
+                              className="flex items-center gap-4"
+                            >
+                              <div className="flex-1">
+                                <h4 className="font-medium">
+                                  Pesanan #{buys.length - index}
+                                </h4>
+                                <p className="text-sm text-muted-foreground">
+                                  {buy.details.length} produk • Rp{" "}
+                                  {buy.totalPrice.toLocaleString("id-ID")}
+                                </p>
+                              </div>
+                              <Badge
+                                variant={
+                                  buy.status === "Baru" ? "default" : "outline"
+                                }
+                                className="ml-auto"
+                              >
+                                {buy.status || "Diproses"}
+                              </Badge>
+                            </div>
+                          );
+                        })}
+                    </div>
                   </CardContent>
                 </Card>
               </div>
