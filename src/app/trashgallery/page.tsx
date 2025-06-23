@@ -66,7 +66,9 @@ export default function ProductsPage() {
     const matchesCategory =
       activeFilters.length === 0 || activeFilters.includes(product.category);
 
-    return matchesSearch && matchesCategory;
+    const hasStock = product.quantity >= 1;
+
+    return matchesSearch && matchesCategory && hasStock;
   });
 
   const sortedProducts = [...filteredProducts].sort((a, b) => {
