@@ -33,82 +33,13 @@ import {
 } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useLeaderboard } from "./hooks/useLeaderboard";
+import { useGifts } from "./hooks/useGifts";
 
 const userPoints = 1200; // Poin pengguna, bisa diambil dari state atau context
 const userRank = 5; // Peringkat pengguna, bisa diambil dari state atau
 
-// Data hadiah reward
-const rewards = [
-  {
-    id: 1,
-    title: "Voucher Belanja Rp 50.000",
-    points: 500,
-    image: "/placeholder.svg?height=200&width=200",
-    category: "Voucher",
-    expiry: "30 hari setelah penukaran",
-    description:
-      "Voucher belanja senilai Rp 50.000 yang dapat digunakan di marketplace Bank Sampah.",
-    stock: 50,
-  },
-  {
-    id: 2,
-    title: "Tas Belanja Ramah Lingkungan",
-    points: 300,
-    image: "/placeholder.svg?height=200&width=200",
-    category: "Produk",
-    expiry: "Tidak ada",
-    description:
-      "Tas belanja ramah lingkungan yang terbuat dari bahan daur ulang.",
-    stock: 25,
-  },
-  {
-    id: 3,
-    title: "Tumbler Eco-Friendly",
-    points: 450,
-    image: "/placeholder.svg?height=200&width=200",
-    category: "Produk",
-    expiry: "Tidak ada",
-    description:
-      "Tumbler ramah lingkungan dengan desain eksklusif Bank Sampah.",
-    stock: 30,
-  },
-  {
-    id: 4,
-    title: "Diskon 20% untuk Pembelian Berikutnya",
-    points: 200,
-    image: "/placeholder.svg?height=200&width=200",
-    category: "Diskon",
-    expiry: "14 hari setelah penukaran",
-    description:
-      "Kupon diskon 20% untuk pembelian produk di marketplace Bank Sampah.",
-    stock: 100,
-  },
-  {
-    id: 5,
-    title: "Bibit Tanaman",
-    points: 150,
-    image: "/placeholder.svg?height=200&width=200",
-    category: "Produk",
-    expiry: "Tidak ada",
-    description:
-      "Bibit tanaman untuk ditanam di rumah atau lingkungan sekitar.",
-    stock: 40,
-  },
-  {
-    id: 6,
-    title: "Donasi untuk Penanaman Pohon",
-    points: 250,
-    image: "/placeholder.svg?height=200&width=200",
-    category: "Donasi",
-    expiry: "Tidak ada",
-    description: "Donasi untuk program penanaman pohon di area kritis.",
-    stock: 999,
-  },
-];
-
 export default function RewardPage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortBy, setSortBy] = useState("points-low");
   const [selectedReward, setSelectedReward] = useState<number | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -117,35 +48,32 @@ export default function RewardPage() {
     loading: loadingLeaderboard,
     error: leaderboardError,
   } = useLeaderboard();
+  const { gifts, loading, error } = useGifts();
 
   // Filter dan urutkan rewards
-  const filteredRewards = rewards
+  const filteredRewards = gifts
     .filter((reward) => {
       // Filter berdasarkan pencarian
-      const matchesSearch = reward.title
+      const matchesSearch = reward.name
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
 
-      // Filter berdasarkan kategori
-      const matchesCategory =
-        selectedCategory === "all" || reward.category === selectedCategory;
-
-      return matchesSearch && matchesCategory;
+      return matchesSearch;
     })
     .sort((a, b) => {
       // Urutkan berdasarkan poin atau nama
       if (sortBy === "points-low") {
-        return a.points - b.points;
+        return a.point - b.point;
       } else if (sortBy === "points-high") {
-        return b.points - a.points;
+        return b.point - a.point;
       } else {
-        return a.title.localeCompare(b.title);
+        return a.name.localeCompare(b.name);
       }
     });
 
   // Fungsi untuk menukarkan poin
   const redeemPoints = (rewardId: number) => {
-    const reward = rewards.find((r) => r.id === rewardId);
+    const reward = gifts.find((r) => r.id === rewardId);
     if (!reward) return;
 
     setSelectedReward(rewardId);
@@ -249,66 +177,42 @@ export default function RewardPage() {
                   <SelectItem value="name">Nama</SelectItem>
                 </SelectContent>
               </Select>
-
-              <Select
-                value={selectedCategory}
-                onValueChange={setSelectedCategory}
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Kategori" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Semua Kategori</SelectItem>
-                  <SelectItem value="Voucher">Voucher</SelectItem>
-                  <SelectItem value="Produk">Produk</SelectItem>
-                  <SelectItem value="Diskon">Diskon</SelectItem>
-                  <SelectItem value="Donasi">Donasi</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
           </div>
 
           {filteredRewards.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredRewards.map((reward) => (
-                <Card key={reward.id} className="overflow-hidden">
+              {filteredRewards.map((gift) => (
+                <Card key={gift.id} className="overflow-hidden">
                   <div className="relative h-48 w-full bg-muted flex items-center justify-center">
                     <Image
-                      src={reward.image || "/placeholder.svg"}
-                      alt={reward.title}
+                      src={gift.image || "/placeholder.svg"}
+                      alt={gift.name}
                       width={150}
                       height={150}
                       className="object-contain"
                     />
                     <Badge className="absolute top-2 right-2 bg-green-600">
-                      {reward.points} poin
+                      {gift.point} poin
                     </Badge>
                   </div>
-                  <CardHeader className="p-4 pb-0">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge variant="outline">{reward.category}</Badge>
-                    </div>
-                    <CardTitle className="text-xl">{reward.title}</CardTitle>
+                  <CardHeader className="p-4">
+                    <CardTitle className="text-xl">{gift.name}</CardTitle>
                     <CardDescription className="text-sm text-muted-foreground">
-                      Stok: {reward.stock} • Berlaku: {reward.expiry}
+                      Stok: {gift.quantity}
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="p-4 pt-2">
-                    <p className="text-muted-foreground">
-                      {reward.description}
-                    </p>
-                  </CardContent>
                   <CardFooter className="p-4 pt-0">
                     <Button
                       className={`w-full ${
-                        userPoints >= reward.points
+                        userPoints >= gift.point
                           ? "bg-green-600 hover:bg-green-700"
                           : "bg-muted text-muted-foreground cursor-not-allowed"
                       }`}
-                      disabled={userPoints < reward.points}
-                      onClick={() => redeemPoints(reward.id)}
+                      disabled={userPoints < gift.point}
+                      onClick={() => redeemPoints(gift.id)}
                     >
-                      {userPoints >= reward.points
+                      {userPoints >= gift.point
                         ? "Tukarkan Poin"
                         : "Poin Tidak Cukup"}
                     </Button>
@@ -328,7 +232,6 @@ export default function RewardPage() {
                 variant="outline"
                 onClick={() => {
                   setSearchQuery("");
-                  setSelectedCategory("all");
                 }}
               >
                 Reset Filter
