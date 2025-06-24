@@ -57,10 +57,10 @@ export default function HeroSection() {
                   size="lg"
                   className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 rounded-xl h-14 px-8 shadow-md hover:shadow-lg transition-all elegant-button"
                 >
-                  <Link href="/products" className="flex">
+                  <a href="#fitur" className="flex">
                     Kenali Lebih Jauh
                     <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
+                  </a>
                 </Button>
               </div>
             </div>
@@ -113,10 +113,10 @@ export default function HeroSection() {
                 size="lg"
                 className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 rounded-xl h-14 px-8 shadow-md hover:shadow-lg transition-all elegant-button"
               >
-                <Link href="/products" className="flex">
+                <a href="#fitur" className="flex">
                   Kenali Lebih Jauh
                   <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
+                </a>
               </Button>
             </div>
           </div>
