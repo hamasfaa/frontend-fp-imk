@@ -34,8 +34,10 @@ jobs:
       - name: Build Next.js app
         run: npm run build
 
-      - name: Check build output
-        run: ls -al && ls -la .next && ls -la public
+      - name: Prepare deploy folder
+        run: |
+          mkdir deploy
+          cp -r .next public node_modules package.json .env deploy/
 
       - name: Deploy via SCP
         uses: appleboy/scp-action@v1
@@ -44,10 +46,5 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
-          source: |
-            .next/
-            public/
-            node_modules/
-            package.json
-            .env
+          source: "deploy/"
           target: "/var/www/nextjs-app"
