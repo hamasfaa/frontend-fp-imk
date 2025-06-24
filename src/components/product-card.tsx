@@ -39,7 +39,7 @@ export default function ProductCard({
 
   return (
     <Card className="overflow-hidden border-0 rounded-xl hover-scale group elegant-card">
-      <Link href={`/products/${id}`} className="block relative">
+      <Link href={`/trashgallery/${id}`} className="block relative">
         <div className="relative h-56 w-full overflow-hidden">
           {/* Subtle gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent z-10"></div>

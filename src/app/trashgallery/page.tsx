@@ -33,7 +33,6 @@ export default function ProductsPage() {
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [sortOption, setSortOption] = useState("newest");
   const { products, loading, error } = useProducts();
-  const { cart, loadingCart, errorCart, addToCart } = useCart();
 
   useEffect(() => {
     const categoryParam = searchParams.get("category");
