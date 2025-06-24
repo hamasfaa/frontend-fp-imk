@@ -27,9 +27,12 @@ export function useDetailTransaction(id: string) {
             price: detail.price,
             quantity: detail.quantity,
             subtotal: detail.sub_total_price,
-            image:
-              detail.Product.image_path ||
-              "/placeholder.svg?height=80&width=80",
+            image: detail.Product.image_path
+              ? `http://127.0.0.1:8000/${detail.product.image_path.replace(
+                  /^\.\/?/,
+                  ""
+                )}`
+              : "/placeholder.svg?height=200&width=400",
           })),
         };
         setTransaction(formattedTransaction);

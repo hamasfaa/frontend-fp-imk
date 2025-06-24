@@ -96,14 +96,14 @@ export default function TransactionDetailPage() {
                   key={item.id}
                   className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg"
                 >
-                  <div className="relative h-16 w-16 overflow-hidden rounded-md bg-white">
+                  {/* <div className="relative h-16 w-16 overflow-hidden rounded-md bg-white">
                     <Image
-                      src={item.image || "/placeholder.svg"}
+                      src={item.image}
                       alt={item.name}
                       fill
                       className="object-cover"
                     />
-                  </div>
+                  </div> */}
                   <div className="flex-1">
                     <h4 className="font-medium">{item.name}</h4>
                     <p className="text-sm text-muted-foreground">
