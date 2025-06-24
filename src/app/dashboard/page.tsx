@@ -515,7 +515,9 @@ export default function DashboardPage() {
                                 : "Diproses"}
                             </Badge>
                             <Button variant="outline" size="sm">
-                              Detail
+                              <Link href={`/dashboard/${transaction.id}`}>
+                                Detail
+                              </Link>
                             </Button>
                           </div>
                         </div>
@@ -576,7 +578,7 @@ export default function DashboardPage() {
                                 : "Diproses"}
                             </Badge>
                             <Button variant="outline" size="sm">
-                              Detail
+                              <Link href={`/dashboard/${buy.id}`}>Detail</Link>
                             </Button>
                           </div>
                         </div>
