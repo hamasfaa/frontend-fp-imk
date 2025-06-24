@@ -3,8 +3,10 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useGifts } from "@/app/trashpoin/hooks/useGifts";
 
 export default function GiftCollectionCTA() {
+  const { gifts, loading, error } = useGifts();
   return (
     <div className="relative my-20 overflow-hidden">
       {/* Subtle background elements */}
@@ -82,34 +84,39 @@ export default function GiftCollectionCTA() {
                 </Button>
               </Link>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              {[
-                { title: "Voucher Belanja Rp 50.000", points: 500 },
-                { title: "Tas Belanja Ramah Lingkungan", points: 300 },
-                { title: "Tumbler Eco-Friendly", points: 450 },
-                { title: "Diskon 20% untuk Pembelian", points: 200 },
-              ].map((reward, index) => (
-                <div
-                  key={index}
-                  className="bg-white p-4 rounded-lg shadow-sm hover-scale"
-                >
-                  <div className="flex justify-between items-center mb-2">
-                    <Badge className="bg-green-600">{reward.points} poin</Badge>
-                  </div>
-                  <h4 className="font-medium mb-1">{reward.title}</h4>
-                  <Link href="/trashpoin">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="p-0 h-auto text-green-600 hover:text-green-700"
+            {loading ? (
+              <p>Memuat hadiah...</p>
+            ) : error ? (
+              <p className="text-red-500">Gagal memuat hadiah: {error}</p>
+            ) : (
+              <div className="grid grid-cols-2 gap-4">
+                {[...gifts.sort((a, b) => b.points - a.points).slice(0, 4)].map(
+                  (reward, index) => (
+                    <div
+                      key={index}
+                      className="bg-white p-4 rounded-lg shadow-sm hover-scale"
                     >
-                      Tukarkan
-                      <ArrowRight className="ml-1 h-3 w-3" />
-                    </Button>
-                  </Link>
-                </div>
-              ))}
-            </div>
+                      <div className="flex justify-between items-center mb-2">
+                        <Badge className="bg-green-600">
+                          {reward.point} poin
+                        </Badge>
+                      </div>
+                      <h4 className="font-medium mb-1">{reward.name}</h4>
+                      <Link href="/trashpoin">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="p-0 h-auto text-green-600 hover:text-green-700"
+                        >
+                          Tukarkan
+                          <ArrowRight className="ml-1 h-3 w-3" />
+                        </Button>
+                      </Link>
+                    </div>
+                  )
+                )}
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
