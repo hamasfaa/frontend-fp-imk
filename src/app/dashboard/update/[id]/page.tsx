@@ -28,6 +28,7 @@ import {
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
 import { useProduct } from "./hooks/useProduct";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function UpdateProductPage() {
   const router = useRouter();
@@ -47,6 +48,7 @@ export default function UpdateProductPage() {
     category: "",
     quantity: "",
     price: "",
+    description: "",
   });
 
   useEffect(() => {
@@ -56,13 +58,16 @@ export default function UpdateProductPage() {
         category: product.data.category || "",
         quantity: product.data.quantity?.toString() || "",
         price: product.data.price?.toString() || "",
+        description: product.data.description || "",
       });
 
       setPreviewImage(product.data.image || null);
     }
   }, [product]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -94,6 +99,7 @@ export default function UpdateProductPage() {
         category: formData.category,
         quantity: parseInt(formData.quantity || "0"),
         price: parseInt(formData.price || "0"),
+        description: formData.description,
         image: newImageFile.current || undefined,
       });
 
@@ -240,6 +246,20 @@ export default function UpdateProductPage() {
                           required
                         />
                       </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="description" className="text-base">
+                        Deskripsi
+                      </Label>
+                      <Textarea
+                        id="description"
+                        name="description"
+                        value={formData.description}
+                        placeholder="Deskripsikan produk Anda secara singkat"
+                        className="mt-1.5"
+                        onChange={handleChange}
+                      />
                     </div>
 
                     <div>

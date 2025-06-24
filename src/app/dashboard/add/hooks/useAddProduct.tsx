@@ -12,6 +12,7 @@ export function useAddProduct() {
     category: string,
     quantity: number,
     price: number,
+    description: string,
     image: File
   ) => {
     setLoading(true);
@@ -23,6 +24,7 @@ export function useAddProduct() {
       formData.append("category", category);
       formData.append("price", price.toString());
       formData.append("quantity", quantity.toString());
+      formData.append("description", description);
       formData.append("image", image);
 
       const response = await formRequest("/product", "POST", formData);

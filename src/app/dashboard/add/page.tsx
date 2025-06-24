@@ -28,6 +28,7 @@ import {
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useAddProduct } from "./hooks/useAddProduct";
 import { useToast } from "@/components/ui/use-toast";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function AddProductPage() {
   const router = useRouter();
@@ -40,6 +41,7 @@ export default function AddProductPage() {
     category: "",
     quantity: "",
     price: "",
+    description: "",
   });
 
   const handleChange = (
@@ -84,6 +86,7 @@ export default function AddProductPage() {
         formData.category,
         parseInt(formData.quantity || "0"),
         parseInt(formData.price || "0"),
+        formData.description,
         fileRef.current
       );
 
@@ -207,6 +210,20 @@ export default function AddProductPage() {
                           required
                         />
                       </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="description" className="text-base">
+                        Deskripsi
+                      </Label>
+                      <Textarea
+                        id="description"
+                        name="description"
+                        value={formData.description}
+                        placeholder="Deskripsikan produk Anda secara singkat"
+                        className="mt-1.5"
+                        onChange={handleChange}
+                      />
                     </div>
 
                     <div>

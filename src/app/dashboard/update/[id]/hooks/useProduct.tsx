@@ -36,6 +36,7 @@ export function useProduct(id: string | null) {
     category: string;
     price: number;
     quantity: number;
+    description: string;
     image?: File;
   }) => {
     if (!id) return { success: false, message: "ID Produk tidak valid" };
@@ -48,10 +49,11 @@ export function useProduct(id: string | null) {
       formData.append("category", dataToUpdate.category);
       formData.append("price", dataToUpdate.price.toString());
       formData.append("quantity", dataToUpdate.quantity.toString());
+      formData.append("description", dataToUpdate.description);
       if (dataToUpdate.image) {
         formData.append("image", dataToUpdate.image);
       }
-      console.log("Updating product with data");
+
       const response = await formRequest(`/product/${id}`, "PUT", formData);
       const data = response.data;
 
