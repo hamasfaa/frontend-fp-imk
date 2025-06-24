@@ -66,7 +66,7 @@ export default function ProductCard({
       </Link>
 
       <CardContent className="p-4">
-        <Link href={`/products/${id}`}>
+        <Link href={`/trashgallery/${id}`}>
           <h3 className="font-semibold text-lg mb-1 hover:text-green-600 transition-colors line-clamp-1">
             {title}
           </h3>
