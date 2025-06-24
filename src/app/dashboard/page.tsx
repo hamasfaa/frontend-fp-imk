@@ -206,7 +206,7 @@ export default function DashboardPage() {
                             >
                               <div className="flex-1">
                                 <h4 className="font-medium">
-                                  Pesanan #{transactions.length - index}
+                                  Pesanan #{transaction.id}
                                 </h4>
                                 <p className="text-sm text-muted-foreground">
                                   {transaction.details.length} produk • Rp{" "}
@@ -260,7 +260,7 @@ export default function DashboardPage() {
                             >
                               <div className="flex-1">
                                 <h4 className="font-medium">
-                                  Pesanan #{buys.length - index}
+                                  Pesanan #{buy.id}
                                 </h4>
                                 <p className="text-sm text-muted-foreground">
                                   {buy.details.length} produk • Rp{" "}
@@ -457,7 +457,7 @@ export default function DashboardPage() {
                           <div className="flex items-center gap-4">
                             <div>
                               <h4 className="font-medium">
-                                Pesanan #{index + 1}
+                                Pesanan #{transaction.id}
                               </h4>
                               <p className="text-sm text-muted-foreground">
                                 {transaction.details.length} produk • Rp{" "}
@@ -550,9 +550,7 @@ export default function DashboardPage() {
                         >
                           <div className="flex items-center gap-4">
                             <div>
-                              <h4 className="font-medium">
-                                Pesanan #{index + 1}
-                              </h4>
+                              <h4 className="font-medium">Pesanan #{buy.id}</h4>
                               <p className="text-sm text-muted-foreground">
                                 {buy.details.length} produk • Rp{" "}
                                 {buy.totalPrice.toLocaleString("id-ID")}
