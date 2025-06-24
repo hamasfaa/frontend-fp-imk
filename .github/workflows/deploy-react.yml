@@ -1,4 +1,4 @@
-name: Deploy Next.js
+name: Deploy Next.js (Server-side)
 
 on:
   push:
@@ -7,6 +7,7 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -33,9 +34,6 @@ jobs:
       - name: Build Next.js app
         run: npm run build
 
-      - name: Export static site
-        run: npm run export
-
       - name: Deploy via SCP
         uses: appleboy/scp-action@v1
         with:
@@ -43,5 +41,10 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
-          source: "out/*"
-          target: "/var/www/html"
+          source: |
+            .next/
+            public/
+            node_modules/
+            package.json
+            .env
+          target: "/var/www/nextjs-app"
