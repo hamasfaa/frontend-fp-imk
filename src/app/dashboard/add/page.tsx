@@ -104,7 +104,7 @@ export default function AddProductPage() {
           variant: "destructive",
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error",
         description: "Terjadi kesalahan saat menambahkan produk",

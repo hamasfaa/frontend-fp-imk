@@ -18,7 +18,7 @@ export function useGifts() {
       }
       const data = response.data;
       console.log("Gifts data:", data);
-      const formattedGifts = data.data.map((gift, index) => ({
+      const formattedGifts = data.data.map((gift: any) => ({
         id: gift.id,
         name: gift.name,
         point: gift.point_price,
@@ -29,7 +29,7 @@ export function useGifts() {
       }));
       setGifts(formattedGifts);
       setError(null);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching gifts:", error);
       setError(error instanceof Error ? error.message : "Terjadi kesalahan");
     } finally {
@@ -52,7 +52,7 @@ export function useGifts() {
       await fetchGifts();
 
       return { success: true };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error exchanging gift:", error);
       return {
         success: false,

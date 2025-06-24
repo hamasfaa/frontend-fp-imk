@@ -91,7 +91,7 @@ export default function TransactionDetailPage() {
             {/* Daftar Barang */}
             <div className="space-y-4 mb-6">
               <h3 className="font-semibold text-lg">Daftar Barang Pesanan</h3>
-              {transaction.items.map((item) => (
+              {transaction.items.map((item: any) => (
                 <div
                   key={item.id}
                   className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg"

@@ -57,7 +57,7 @@ export default function ProductsPage() {
     );
   }
 
-  const filteredProducts = products.filter((product) => {
+  const filteredProducts = products.filter((product: any) => {
     const matchesSearch =
       product.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       product.seller?.toLowerCase().includes(searchQuery.toLowerCase());
@@ -70,7 +70,7 @@ export default function ProductsPage() {
     return matchesSearch && matchesCategory && hasStock;
   });
 
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
+  const sortedProducts = [...filteredProducts].sort((a: any, b: any) => {
     switch (sortOption) {
       case "newest":
         return (
@@ -122,7 +122,7 @@ export default function ProductsPage() {
         <div className="flex gap-2">
           <Select
             value={sortOption}
-            onValueChange={(value) => setSortOption(value as SortOption)}
+            onValueChange={(value) => setSortOption(value)}
           >
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Urutkan" />
@@ -227,7 +227,7 @@ export default function ProductsPage() {
 
       {sortedProducts.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {sortedProducts.map((product) => (
+          {sortedProducts.map((product: any) => (
             <ProductCard
               key={product.id}
               id={product.id}

@@ -22,11 +22,11 @@ export function useMyTransactions() {
 
       const data = response.data;
 
-      const formattedTransactions = data.data.map((transaction) => ({
+      const formattedTransactions = data.data.map((transaction: any) => ({
         id: transaction.id,
         totalPrice: transaction.total_price,
         status: transaction.status,
-        details: transaction.transaction_details.map((detail) => ({
+        details: transaction.transaction_details.map((detail: any) => ({
           id: detail.id,
           subTotalPrice: detail.sub_total_price,
           price: detail.price,
@@ -43,7 +43,7 @@ export function useMyTransactions() {
       }));
 
       setTransactions(formattedTransactions);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching my transactions:", error);
       setError(error instanceof Error ? error.message : "Terjadi kesalahan");
     } finally {
@@ -63,14 +63,14 @@ export function useMyTransactions() {
         throw new Error(`Gagal mengubah status transaksi ke ${status}`);
       }
 
-      setTransactions((prevTransactions) =>
-        prevTransactions.map((transaction) =>
+      setTransactions((prevTransactions: any) =>
+        prevTransactions.map((transaction: any) =>
           transaction.id === id ? { ...transaction, status } : transaction
         )
       );
 
       return { success: true };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating transaction status:", error);
       setError(
         error instanceof Error

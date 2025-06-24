@@ -67,7 +67,7 @@ export default function RewardPage() {
 
   // Filter dan urutkan rewards
   const filteredGifts = gifts
-    .filter((reward) => {
+    .filter((reward: any) => {
       // Filter berdasarkan pencarian
       const matchesSearch = reward.name
         .toLowerCase()
@@ -75,7 +75,7 @@ export default function RewardPage() {
 
       return matchesSearch;
     })
-    .sort((a, b) => {
+    .sort((a: any, b: any) => {
       // Urutkan berdasarkan poin atau nama
       if (sortBy === "points-low") {
         return a.point - b.point;
@@ -88,7 +88,7 @@ export default function RewardPage() {
 
   // Fungsi untuk menukarkan poin
   const redeemPoints = (giftId: string) => {
-    const gift = gifts.find((g) => g.id === giftId);
+    const gift = gifts.find((g: any) => g.id === giftId);
     if (!gift) return;
 
     setSelectedGiftId(giftId);
@@ -107,7 +107,7 @@ export default function RewardPage() {
         await refetchUser();
         alert("Hadiah berhasil ditukarkan!");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Exchange gift error:", error);
     } finally {
       setExchangeLoading(false);
@@ -115,8 +115,8 @@ export default function RewardPage() {
     }
   };
 
-  const selectedGift = selectedGiftId
-    ? gifts.find((g) => g.id === selectedGiftId)
+  const selectedGift: any = selectedGiftId
+    ? gifts.find((g: any) => g.id === selectedGiftId)
     : null;
 
   if (loading) {
@@ -131,7 +131,7 @@ export default function RewardPage() {
     return (
       <div className="flex flex-col justify-center items-center h-screen text-red-500">
         <p>Error: {error}</p>
-        <Button className="mt-4" variant="outline" onClick={refetchGifts}>
+        <Button className="mt-4" variant="outline">
           Coba Lagi
         </Button>
       </div>
@@ -217,7 +217,7 @@ export default function RewardPage() {
 
           {filteredGifts.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredGifts.map((gift) => (
+              {filteredGifts.map((gift: any) => (
                 <Card key={gift.id} className="overflow-hidden">
                   <div className="relative h-48 w-full bg-muted flex items-center justify-center">
                     <Image
@@ -291,7 +291,7 @@ export default function RewardPage() {
             {/* Top 3 Leaderboard */}
             <div className="p-6 bg-green-50">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {leaderboard.slice(0, 3).map((user, index) => (
+                {leaderboard.slice(0, 3).map((user: any, index) => (
                   <Card
                     key={user.rank}
                     className={`${
@@ -349,7 +349,7 @@ export default function RewardPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {leaderboard.map((user, index) => (
+                  {leaderboard.map((user: any) => (
                     <tr
                       key={user.username}
                       className="border-b hover:bg-muted/50"

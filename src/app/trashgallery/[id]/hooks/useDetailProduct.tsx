@@ -4,7 +4,7 @@ import { jsonRequest } from "@/lib/api";
 import { useState, useEffect } from "react";
 
 export function useDetailProduct(id: string) {
-  const [product, setProduct] = useState(null);
+  const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,7 +34,7 @@ export function useDetailProduct(id: string) {
         };
         console.log("Formatted Product:", formattedProduct);
         setProduct(formattedProduct);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error fetching product:", error);
         setError(error instanceof Error ? error.message : "Terjadi kesalahan");
       } finally {

@@ -22,11 +22,11 @@ export function useMyBuys() {
 
       const data = response.data;
 
-      const formattedBuys = data.data.map((transaction) => ({
+      const formattedBuys = data.data.map((transaction: any) => ({
         id: transaction.id,
         totalPrice: transaction.total_price,
         status: transaction.status,
-        details: transaction.transaction_details.map((detail) => ({
+        details: transaction.transaction_details.map((detail: any) => ({
           id: detail.id,
           subTotalPrice: detail.sub_total_price,
           price: detail.price,
@@ -43,7 +43,7 @@ export function useMyBuys() {
       }));
 
       setBuys(formattedBuys);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching my buys:", error);
       setError(error instanceof Error ? error.message : "Terjadi kesalahan");
     } finally {

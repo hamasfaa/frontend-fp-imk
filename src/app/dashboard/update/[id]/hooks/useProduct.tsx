@@ -4,7 +4,7 @@ import { formRequest, jsonRequest } from "@/lib/api";
 import { useState, useEffect, useCallback } from "react";
 
 export function useProduct(id: string | null) {
-  const [product, setProduct] = useState<Product | null>(null);
+  const [product, setProduct] = useState<null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -63,7 +63,7 @@ export function useProduct(id: string | null) {
       } else {
         throw new Error(data.message || "Gagal memperbarui produk");
       }
-    } catch (error) {
+    } catch (error: any) {
       setError((error as Error).message);
       return { success: false, message: (error as Error).message };
     } finally {

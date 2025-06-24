@@ -79,7 +79,7 @@ export default function BeritaPage() {
 
         <TabsContent value="articles">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {displayedArticles.map((article) => (
+            {displayedArticles.map((article: any) => (
               <Card key={article.id} className="overflow-hidden">
                 <div className="relative h-48 w-full">
                   <Image
@@ -149,7 +149,7 @@ export default function BeritaPage() {
           ) : (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {displayedVideos.map((video) => (
+                {displayedVideos.map((video: any) => (
                   <Card key={video.id} className="overflow-hidden">
                     <div className="relative h-48 w-full group">
                       <Image

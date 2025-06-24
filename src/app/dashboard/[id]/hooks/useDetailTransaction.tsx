@@ -4,7 +4,7 @@ import { jsonRequest } from "@/lib/api";
 import { useState, useEffect } from "react";
 
 export function useDetailTransaction(id: string) {
-  const [transaction, setTransaction] = useState(null);
+  const [transaction, setTransaction] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,7 +21,7 @@ export function useDetailTransaction(id: string) {
           id: data.data.id,
           status: data.data.status,
           totalPrice: data.data.total_price,
-          items: data.data.transaction_details.map((detail) => ({
+          items: data.data.transaction_details.map((detail: any) => ({
             id: detail.id,
             name: detail.Product.name,
             price: detail.price,
@@ -36,7 +36,7 @@ export function useDetailTransaction(id: string) {
           })),
         };
         setTransaction(formattedTransaction);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error fetching transaction:", error);
         setError(error instanceof Error ? error.message : "Terjadi kesalahan");
       } finally {

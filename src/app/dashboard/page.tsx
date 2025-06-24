@@ -32,6 +32,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -47,23 +48,23 @@ export default function DashboardPage() {
 
   const { buys, loading: buysLoading, error: buysError } = useMyBuys();
 
-  const deleteProduct = async (product) => {
+  const deleteProduct = async (product: any) => {
     if (window.confirm(`Apakah Anda yakin ingin menghapus ${product.title}?`)) {
       try {
         const result = await deleteMyProduct(product.id);
         if (result.success) {
           alert(`Produk ${product.title} berhasil dihapus`);
         } else {
-          alert(`Gagal menghapus produk: ${result.error}`);
+          alert(`Gagal menghapus produk: ${result}`);
         }
-      } catch (err) {
+      } catch (err: any) {
         alert("Terjadi kesalahan saat menghapus produk");
       }
     }
   };
 
   const filteredProducts = useMemo(() => {
-    return products.filter((product) => {
+    return products.filter((product: any) => {
       const matchesSearch = product.title
         ?.toLowerCase()
         .includes(searchQuery.toLowerCase());
@@ -74,12 +75,17 @@ export default function DashboardPage() {
   }, [products, searchQuery, categoryFilter]);
 
   const totalRevenue = useMemo(() => {
-    return transactions.reduce((sum, tx) => sum + (tx.totalPrice || 0), 0);
+    return transactions.reduce((sum, tx: any) => sum + (tx.totalPrice || 0), 0);
   }, [transactions]);
 
   const totalOrders = useMemo(() => {
-    return transactions.reduce((count, tx) => count + tx.details.length, 0);
+    return transactions.reduce(
+      (count, tx: any) => count + tx.details.length,
+      0
+    );
   }, [transactions]);
+
+  const { toast } = useToast();
 
   if (loading) {
     return (
@@ -198,7 +204,7 @@ export default function DashboardPage() {
                       {transactions
                         .slice(-3)
                         .reverse()
-                        .map((transaction, index) => {
+                        .map((transaction: any) => {
                           return (
                             <div
                               key={transaction.id}
@@ -252,7 +258,7 @@ export default function DashboardPage() {
                       {buys
                         .slice(-3)
                         .reverse()
-                        .map((buy, index) => {
+                        .map((buy: any) => {
                           return (
                             <div
                               key={buy.id}
@@ -359,7 +365,7 @@ export default function DashboardPage() {
                   </div>
                   {filteredProducts.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {filteredProducts.map((product) => (
+                      {filteredProducts.map((product: any) => (
                         <Card key={product.id} className="overflow-hidden">
                           <div className="relative h-40 w-full">
                             <Image
@@ -448,7 +454,7 @@ export default function DashboardPage() {
                       </p>
                     )}
 
-                    {transactions.map((transaction, index) => {
+                    {transactions.map((transaction: any) => {
                       return (
                         <div
                           key={transaction.id}
@@ -544,7 +550,7 @@ export default function DashboardPage() {
                       </p>
                     )}
 
-                    {buys.map((buy, index) => {
+                    {buys.map((buy: any) => {
                       return (
                         <div
                           key={buy.id}

@@ -13,7 +13,7 @@ import { useCart } from "@/app/cart/hooks/useCart";
 import { useRouter } from "next/navigation";
 
 export default function ProductDetailPage() {
-  const { cart, loadingCart, errorCart, addToCart } = useCart();
+  const { addToCart } = useCart();
   const params = useParams();
   const router = useRouter();
 

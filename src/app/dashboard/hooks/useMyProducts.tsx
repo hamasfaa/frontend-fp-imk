@@ -20,7 +20,7 @@ export function useMyProducts() {
         throw new Error("Gagal mengambil data produk saya");
       }
       const data = response.data;
-      const formattedProducts = data.data.map((item, index) => ({
+      const formattedProducts = data.data.map((item: any) => ({
         id: item.id,
         title: item.name,
         price: item.price,
@@ -32,7 +32,7 @@ export function useMyProducts() {
         seller: "Sementara",
       }));
       setProducts(formattedProducts);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching my products:", error);
       setError(error instanceof Error ? error.message : "Terjadi kesalahan");
     } finally {
@@ -51,7 +51,7 @@ export function useMyProducts() {
       fetchMyProducts();
 
       return { success: true };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error deleting product:", error);
       setError(
         error instanceof Error

@@ -66,7 +66,7 @@ export default function TPATerdekatPage() {
   const [sortBy, setSortBy] = useState<"distance" | "name">("distance");
   const [allTpa, setAllTpa] = useState<TPA[]>([]);
   const [filteredTpa, setFilteredTpa] = useState<TPA[]>([]);
-  const [selectedTPA, setSelectedTPA] = useState<number | null>(null);
+  const [selectedTPA, setSelectedTPA] = useState<any | null>(null);
 
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
@@ -187,7 +187,7 @@ export default function TPATerdekatPage() {
     [location]
   );
 
-  const handleMarkerClick = (tpaId: string) => {
+  const handleMarkerClick = (tpaId: number) => {
     setSelectedTPA(tpaId);
   };
 
@@ -297,7 +297,7 @@ export default function TPATerdekatPage() {
               </div>
             ) : filteredTpa.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredTpa.map((tpa) => (
+                {filteredTpa.map((tpa: any) => (
                   <Card
                     key={tpa.id}
                     className={`overflow-hidden transition-all hover:shadow-lg cursor-pointer ${
@@ -368,7 +368,7 @@ export default function TPATerdekatPage() {
                         />
                       )}
 
-                      {filteredTpa.map((tpa) => (
+                      {filteredTpa.map((tpa: any) => (
                         <MarkerF
                           key={tpa.id}
                           position={tpa.coordinates}

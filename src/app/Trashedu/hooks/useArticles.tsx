@@ -19,7 +19,7 @@ export function useArticles() {
 
         const data = response.data;
 
-        const formattedArticles = data.data.map((item, index) => ({
+        const formattedArticles = data.data.map((item: any, index: any) => ({
           id: index,
           title: item.title,
           excerpt: item.source,
@@ -30,7 +30,7 @@ export function useArticles() {
           link: item.link,
         }));
         setArticles(formattedArticles);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error fetching articles:", error);
         setError(error instanceof Error ? error.message : "Terjadi kesalahan");
       } finally {

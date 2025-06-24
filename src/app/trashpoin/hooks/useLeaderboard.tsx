@@ -17,7 +17,7 @@ export function useLeaderboard() {
           throw new Error("Gagal mengambil data leaderboard");
         }
         const data = response.data;
-        const formattedLeaderboard = data.data.map((item, index) => ({
+        const formattedLeaderboard = data.data.map((item: any) => ({
           username: item.username,
           points: item.points,
           rank: item.rank,
@@ -25,7 +25,7 @@ export function useLeaderboard() {
           lastname: item.last_name,
         }));
         setLeaderboard(formattedLeaderboard);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error fetching leaderboard:", error);
         setError(error instanceof Error ? error.message : "Terjadi kesalahan");
       } finally {

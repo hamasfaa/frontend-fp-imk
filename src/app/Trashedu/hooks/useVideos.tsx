@@ -21,7 +21,9 @@ export const useVideos = (query = "Daur ulang sampah", maxResults = 100) => {
 
         const data = await response.json();
 
-        const videoIds = data.items.map((item) => item.id.videoId).join(",");
+        const videoIds = data.items
+          .map((item: any) => item.id.videoId)
+          .join(",");
         const detailsResponse = await fetch(
           `https://www.googleapis.com/youtube/v3/videos?part=contentDetails,statistics&id=${videoIds}&key=${API_KEY}`
         );
@@ -32,9 +34,9 @@ export const useVideos = (query = "Daur ulang sampah", maxResults = 100) => {
 
         const detailsData = await detailsResponse.json();
 
-        const formattedVideos = data.items.map((item) => {
+        const formattedVideos = data.items.map((item: any) => {
           const videoDetails = detailsData.items.find(
-            (detail) => detail.id === item.id.videoId
+            (detail: any) => detail.id === item.id.videoId
           );
           const duration = videoDetails
             ? formatDuration(videoDetails.contentDetails.duration)
@@ -60,7 +62,7 @@ export const useVideos = (query = "Daur ulang sampah", maxResults = 100) => {
 
         setVideos(formattedVideos);
         setLoading(false);
-      } catch (err) {
+      } catch (err: any) {
         console.error("Error fetching YouTube videos:", err);
         setError(err.message);
         setLoading(false);
@@ -70,7 +72,7 @@ export const useVideos = (query = "Daur ulang sampah", maxResults = 100) => {
     fetchVideos();
   }, [query, maxResults]);
 
-  const formatDuration = (duration) => {
+  const formatDuration = (duration: any) => {
     const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
 
     const hours = match[1] ? match[1].replace("H", "") : 0;

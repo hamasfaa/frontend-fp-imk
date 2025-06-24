@@ -30,19 +30,18 @@ export default function CartPage() {
   const [orderPlaced, setOrderPlaced] = useState(false);
   const {
     cart,
-    loadingCart,
-    errorCart,
-    addToCart,
     deleteFromCart,
     updateCart,
     fetchCart,
     checkout,
+    loading: loadingCart,
+    error: errorCart,
   } = useCart();
   const { toast } = useToast();
 
   useEffect(() => {
     fetchCart();
-  }, []);
+  }, [fetchCart]);
 
   const handleCheckout = async () => {
     setIsCheckingOut(true);
@@ -68,7 +67,7 @@ export default function CartPage() {
           }`
         );
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Unexpected checkout error:", error);
       toast({
         title: "Error",
@@ -80,12 +79,12 @@ export default function CartPage() {
     }
   };
 
-  const updateQuantity = async (id: number, newQuantity: number) => {
+  const updateQuantity = async (id: string, newQuantity: number) => {
     if (newQuantity < 1) return;
     try {
       await updateCart(id, newQuantity);
       await fetchCart();
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error",
         description: "Gagal mengubah jumlah item",
@@ -94,7 +93,7 @@ export default function CartPage() {
     }
   };
 
-  const removeItem = async (id: number) => {
+  const removeItem = async (id: string) => {
     try {
       setIsDeleting(true);
       await deleteFromCart(id);
@@ -105,7 +104,7 @@ export default function CartPage() {
       });
 
       await fetchCart();
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error",
         description: "Gagal menghapus item dari keranjang",

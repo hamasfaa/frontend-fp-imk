@@ -48,12 +48,12 @@ export default function Home() {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {[...products]
                 .sort(
-                  (a, b) =>
+                  (a: any, b: any) =>
                     new Date(b.createdAt || 0).getTime() -
                     new Date(a.createdAt || 0).getTime()
                 )
                 .slice(0, 4)
-                .map((product) => (
+                .map((product: any) => (
                   <ProductCard
                     key={product.id}
                     id={product.id}
@@ -96,12 +96,12 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[...articles]
                 .sort(
-                  (a, b) =>
+                  (a: any, b: any) =>
                     new Date(b.createdAt || 0).getTime() -
                     new Date(a.createdAt || 0).getTime()
                 )
                 .slice(0, 3)
-                .map((article) => (
+                .map((article: any) => (
                   <Link
                     href={article.link || "/trashedu"}
                     key={article.id}

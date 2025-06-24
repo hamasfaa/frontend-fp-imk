@@ -4,7 +4,7 @@ import { jsonRequest } from "@/lib/api";
 import { useState, useEffect, useCallback } from "react";
 
 export function useUpdateProfile() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,7 +28,7 @@ export function useUpdateProfile() {
         phone: data.data.phone,
       };
       setUser(formattedUser);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching user:", error);
       setError(error instanceof Error ? error.message : "Terjadi kesalahan");
     } finally {
@@ -61,7 +61,7 @@ export function useUpdateProfile() {
       }
       await fetchUser();
       return { success: true, message: "Profil berhasil diperbarui" };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating profile:", error);
       setError(error instanceof Error ? error.message : "Terjadi kesalahan");
       return {

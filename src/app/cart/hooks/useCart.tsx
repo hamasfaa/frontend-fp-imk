@@ -4,7 +4,16 @@ import { jsonRequest } from "@/lib/api";
 import { useEffect, useState } from "react";
 
 export function useCart() {
-  const [cart, setCart] = useState([]);
+  type CartItem = {
+    id: string;
+    price: number;
+    quantity: number;
+    image: string;
+    title: string;
+    seller: string;
+  };
+
+  const [cart, setCart] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,7 +29,7 @@ export function useCart() {
         throw new Error("Gagal mengambil data keranjang");
       }
       const data = response.data;
-      const formattedCart = data.data.items.map((item, index) => ({
+      const formattedCart = data.data.items.map((item: any) => ({
         id: item.product_id,
         title: item.name,
         price: item.price,
@@ -32,7 +41,7 @@ export function useCart() {
       }));
 
       setCart(formattedCart);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching cart:", error);
       setError(error instanceof Error ? error.message : "Terjadi kesalahan");
     } finally {
@@ -54,7 +63,7 @@ export function useCart() {
       fetchCart();
 
       return { success: true };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error adding to cart:", error);
       setError(
         error instanceof Error
@@ -80,7 +89,7 @@ export function useCart() {
       await fetchCart();
 
       return { success: true };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error deleting from cart:", error);
       setError(
         error instanceof Error
@@ -107,7 +116,7 @@ export function useCart() {
       fetchCart();
 
       return { success: true };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error adding quantity to cart:", error);
       setError(
         error instanceof Error
@@ -131,7 +140,7 @@ export function useCart() {
       setError(null);
 
       return { success: true };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error during checkout:", error);
 
       if (error.response) {

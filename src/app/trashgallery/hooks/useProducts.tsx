@@ -17,7 +17,7 @@ export function useProducts() {
           throw new Error("Gagal mengambil data produk");
         }
         const data = response.data;
-        const formattedProducts = data.data.map((item, index) => ({
+        const formattedProducts = data.data.map((item: any) => ({
           id: item.id,
           title: item.name,
           price: item.price,
@@ -29,7 +29,7 @@ export function useProducts() {
           seller: item.owner,
         }));
         setProducts(formattedProducts);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error fetching products:", error);
         setError(error instanceof Error ? error.message : "Terjadi kesalahan");
       } finally {

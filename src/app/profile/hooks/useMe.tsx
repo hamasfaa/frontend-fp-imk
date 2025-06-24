@@ -4,7 +4,7 @@ import { jsonRequest } from "@/lib/api";
 import { useState, useEffect, useCallback } from "react";
 
 export function useMe() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,7 +29,7 @@ export function useMe() {
       };
       setUser(formattedUser);
       setError(null);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching user:", error);
       setError(error instanceof Error ? error.message : "Terjadi kesalahan");
     } finally {

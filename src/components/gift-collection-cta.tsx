@@ -90,31 +90,33 @@ export default function GiftCollectionCTA() {
               <p className="text-red-500">Gagal memuat hadiah: {error}</p>
             ) : (
               <div className="grid grid-cols-2 gap-4">
-                {[...gifts.sort((a, b) => b.points - a.points).slice(0, 4)].map(
-                  (reward, index) => (
-                    <div
-                      key={index}
-                      className="bg-white p-4 rounded-lg shadow-sm hover-scale"
-                    >
-                      <div className="flex justify-between items-center mb-2">
-                        <Badge className="bg-green-600">
-                          {reward.point} poin
-                        </Badge>
-                      </div>
-                      <h4 className="font-medium mb-1">{reward.name}</h4>
-                      <Link href="/trashpoin">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="p-0 h-auto text-green-600 hover:text-green-700"
-                        >
-                          Tukarkan
-                          <ArrowRight className="ml-1 h-3 w-3" />
-                        </Button>
-                      </Link>
+                {[
+                  ...gifts
+                    .sort((a: any, b: any) => b.points - a.points)
+                    .slice(0, 4),
+                ].map((reward: any, index) => (
+                  <div
+                    key={index}
+                    className="bg-white p-4 rounded-lg shadow-sm hover-scale"
+                  >
+                    <div className="flex justify-between items-center mb-2">
+                      <Badge className="bg-green-600">
+                        {reward.point} poin
+                      </Badge>
                     </div>
-                  )
-                )}
+                    <h4 className="font-medium mb-1">{reward.name}</h4>
+                    <Link href="/trashpoin">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="p-0 h-auto text-green-600 hover:text-green-700"
+                      >
+                        Tukarkan
+                        <ArrowRight className="ml-1 h-3 w-3" />
+                      </Button>
+                    </Link>
+                  </div>
+                ))}
               </div>
             )}
           </div>

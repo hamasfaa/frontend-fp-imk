@@ -26,7 +26,7 @@ export default function ProductCard({
   category,
   seller,
 }: ProductCardProps) {
-  const { cart, loadingCart, errorCart, addToCart } = useCart();
+  const { addToCart } = useCart();
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("id-ID", {

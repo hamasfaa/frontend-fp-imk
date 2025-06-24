@@ -37,7 +37,9 @@ export default function UpdateProductPage() {
 
   const productId = params.id as string;
 
-  const { product, loading, error, updateProduct } = useProduct(productId);
+  const { product, loading, error, updateProduct } = useProduct(
+    productId
+  ) as any;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -117,7 +119,7 @@ export default function UpdateProductPage() {
           variant: "destructive",
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error",
         description: "Terjadi kesalahan saat menambahkan produk",
