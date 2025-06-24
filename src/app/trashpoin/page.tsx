@@ -221,14 +221,7 @@ export default function RewardPage() {
                 <Card key={gift.id} className="overflow-hidden">
                   <div className="relative h-48 w-full bg-muted flex items-center justify-center">
                     <Image
-                      src={
-                        gift.image_path
-                          ? `http://127.0.0.1:8000/${gift.image_path.replace(
-                              /^\.\/?/,
-                              ""
-                            )}`
-                          : "/placeholder.svg"
-                      }
+                      src={gift.image}
                       alt={gift.name}
                       width={150}
                       height={150}
@@ -432,14 +425,7 @@ export default function RewardPage() {
             <div className="flex items-center gap-4 py-4">
               <div className="relative h-16 w-16 overflow-hidden rounded-md bg-muted">
                 <Image
-                  src={
-                    selectedGift.image_path
-                      ? `http://127.0.0.1:8000/${selectedGift.image_path.replace(
-                          /^\.\/?/,
-                          ""
-                        )}`
-                      : "/placeholder.svg"
-                  }
+                  src={selectedGift.image}
                   alt={selectedGift.name}
                   fill
                   className="object-contain"
