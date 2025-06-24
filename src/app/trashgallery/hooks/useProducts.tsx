@@ -26,7 +26,7 @@ export function useProducts() {
             : "/placeholder.svg?height=200&width=400",
           quantity: item.quantity,
           category: item.category,
-          seller: "Sementara",
+          seller: item.owner,
         }));
         setProducts(formattedProducts);
       } catch (error) {
