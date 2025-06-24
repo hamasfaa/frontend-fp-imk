@@ -4,7 +4,7 @@ import { DialogFooter } from "@/components/ui/dialog";
 
 import { useState } from "react";
 import Image from "next/image";
-import { Gift, Search, Info, Trophy, Users } from "lucide-react";
+import { Gift, Search, Info, Trophy, Users, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -34,24 +34,39 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useLeaderboard } from "./hooks/useLeaderboard";
 import { useGifts } from "./hooks/useGifts";
-
-const userPoints = 1200; // Poin pengguna, bisa diambil dari state atau context
-const userRank = 5; // Peringkat pengguna, bisa diambil dari state atau
+import { useMe } from "../profile/hooks/useMe";
 
 export default function RewardPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("points-low");
-  const [selectedReward, setSelectedReward] = useState<number | null>(null);
+  const [selectedGiftId, setSelectedGiftId] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [exchangeLoading, setExchangeLoading] = useState(false);
+  const { user, refetchUser } = useMe();
   const {
     leaderboard,
     loading: loadingLeaderboard,
     error: leaderboardError,
   } = useLeaderboard();
-  const { gifts, loading, error } = useGifts();
+  const { gifts, loading, error, exchangeGift } = useGifts();
+  const userPoints = user?.points || 0;
+  const userRank = user?.rank || "-";
+
+  const getRankBadgeColor = (index: number) => {
+    switch (index) {
+      case 0:
+        return "bg-yellow-500 text-yellow-950";
+      case 1:
+        return "bg-gray-300 text-gray-950";
+      case 2:
+        return "bg-amber-600 text-amber-950";
+      default:
+        return "bg-green-100 text-green-950";
+    }
+  };
 
   // Filter dan urutkan rewards
-  const filteredRewards = gifts
+  const filteredGifts = gifts
     .filter((reward) => {
       // Filter berdasarkan pencarian
       const matchesSearch = reward.name
@@ -72,34 +87,56 @@ export default function RewardPage() {
     });
 
   // Fungsi untuk menukarkan poin
-  const redeemPoints = (rewardId: number) => {
-    const reward = gifts.find((r) => r.id === rewardId);
-    if (!reward) return;
+  const redeemPoints = (giftId: string) => {
+    const gift = gifts.find((g) => g.id === giftId);
+    if (!gift) return;
 
-    setSelectedReward(rewardId);
+    setSelectedGiftId(giftId);
     setIsDialogOpen(true);
   };
 
-  // Fungsi untuk konfirmasi penukaran poin
-  const confirmRedemption = () => {
-    // Logika penukaran poin akan ditambahkan di sini
-    setIsDialogOpen(false);
-    alert("Penukaran poin berhasil! Hadiah akan segera diproses.");
-  };
+  const confirmRedemption = async () => {
+    if (!selectedGiftId) return;
 
-  // Fungsi untuk mendapatkan badge warna berdasarkan peringkat
-  const getRankBadgeColor = (index: number) => {
-    switch (index) {
-      case 0:
-        return "bg-yellow-500 text-yellow-950";
-      case 1:
-        return "bg-gray-300 text-gray-950";
-      case 2:
-        return "bg-amber-600 text-amber-950";
-      default:
-        return "bg-green-100 text-green-950";
+    setExchangeLoading(true);
+    try {
+      const success = await exchangeGift(selectedGiftId);
+      if (success) {
+        setSelectedGiftId(null);
+        setIsDialogOpen(false);
+        await refetchUser();
+        alert("Hadiah berhasil ditukarkan!");
+      }
+    } catch (error) {
+      console.error("Exchange gift error:", error);
+    } finally {
+      setExchangeLoading(false);
+      setIsDialogOpen(false);
     }
   };
+
+  const selectedGift = selectedGiftId
+    ? gifts.find((g) => g.id === selectedGiftId)
+    : null;
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-green-600" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col justify-center items-center h-screen text-red-500">
+        <p>Error: {error}</p>
+        <Button className="mt-4" variant="outline" onClick={refetchGifts}>
+          Coba Lagi
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -110,7 +147,6 @@ export default function RewardPage() {
           menarik
         </p>
       </div>
-
       <div className="bg-green-50 rounded-lg p-6 mb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
           <div className="flex items-center gap-4">
@@ -137,7 +173,6 @@ export default function RewardPage() {
           </div>
         </div>
       </div>
-
       <Tabs defaultValue="rewards" className="w-full">
         <TabsList className="grid w-full grid-cols-2 mb-8">
           <TabsTrigger value="rewards" className="flex items-center gap-2">
@@ -180,13 +215,20 @@ export default function RewardPage() {
             </div>
           </div>
 
-          {filteredRewards.length > 0 ? (
+          {filteredGifts.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredRewards.map((gift) => (
+              {filteredGifts.map((gift) => (
                 <Card key={gift.id} className="overflow-hidden">
                   <div className="relative h-48 w-full bg-muted flex items-center justify-center">
                     <Image
-                      src={gift.image || "/placeholder.svg"}
+                      src={
+                        gift.image_path
+                          ? `http://127.0.0.1:8000/${gift.image_path.replace(
+                              /^\.\/?/,
+                              ""
+                            )}`
+                          : "/placeholder.svg"
+                      }
                       alt={gift.name}
                       width={150}
                       height={150}
@@ -205,14 +247,16 @@ export default function RewardPage() {
                   <CardFooter className="p-4 pt-0">
                     <Button
                       className={`w-full ${
-                        userPoints >= gift.point
+                        userPoints >= gift.point && gift.quantity > 0
                           ? "bg-green-600 hover:bg-green-700"
                           : "bg-muted text-muted-foreground cursor-not-allowed"
                       }`}
-                      disabled={userPoints < gift.point}
+                      disabled={userPoints < gift.point || gift.quantity <= 0}
                       onClick={() => redeemPoints(gift.id)}
                     >
-                      {userPoints >= gift.point
+                      {gift.quantity <= 0
+                        ? "Stok Habis"
+                        : userPoints >= gift.point
                         ? "Tukarkan Poin"
                         : "Poin Tidak Cukup"}
                     </Button>
@@ -376,9 +420,7 @@ export default function RewardPage() {
           </div>
         </TabsContent>
       </Tabs>
-
-      {/* Dialog konfirmasi penukaran poin */}
-      {selectedReward && (
+      {selectedGift && (
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent>
             <DialogHeader>
@@ -391,22 +433,22 @@ export default function RewardPage() {
               <div className="relative h-16 w-16 overflow-hidden rounded-md bg-muted">
                 <Image
                   src={
-                    rewards.find((r) => r.id === selectedReward)?.image ||
-                    "/placeholder.svg"
+                    selectedGift.image_path
+                      ? `http://127.0.0.1:8000/${selectedGift.image_path.replace(
+                          /^\.\/?/,
+                          ""
+                        )}`
+                      : "/placeholder.svg"
                   }
-                  alt={
-                    rewards.find((r) => r.id === selectedReward)?.title || ""
-                  }
+                  alt={selectedGift.name}
                   fill
                   className="object-contain"
                 />
               </div>
               <div className="flex-1">
-                <h4 className="font-medium">
-                  {rewards.find((r) => r.id === selectedReward)?.title}
-                </h4>
+                <h4 className="font-medium">{selectedGift.name}</h4>
                 <p className="text-sm text-muted-foreground">
-                  {rewards.find((r) => r.id === selectedReward)?.points} poin
+                  {selectedGift.point} poin
                 </p>
               </div>
             </div>
@@ -418,14 +460,26 @@ export default function RewardPage() {
               </p>
             </div>
             <DialogFooter className="flex gap-2 sm:justify-between">
-              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setIsDialogOpen(false)}
+                disabled={exchangeLoading}
+              >
                 Batal
               </Button>
               <Button
                 className="bg-green-600 hover:bg-green-700"
                 onClick={confirmRedemption}
+                disabled={exchangeLoading}
               >
-                Konfirmasi Penukaran
+                {exchangeLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Memproses...
+                  </>
+                ) : (
+                  "Konfirmasi Penukaran"
+                )}
               </Button>
             </DialogFooter>
           </DialogContent>
