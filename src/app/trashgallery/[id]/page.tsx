@@ -9,9 +9,13 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useDetailProduct } from "./hooks/useDetailProduct";
 import { useParams } from "next/navigation";
+import { useCart } from "@/app/cart/hooks/useCart";
+import { useRouter } from "next/navigation";
 
 export default function ProductDetailPage() {
+  const { cart, loadingCart, errorCart, addToCart } = useCart();
   const params = useParams();
+  const router = useRouter();
 
   const productId = params.id as string;
 
@@ -117,6 +121,7 @@ export default function ProductDetailPage() {
               <Button
                 size="lg"
                 className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl h-12"
+                onClick={() => addToCart(product.id)}
               >
                 <ShoppingCart className="h-5 w-5 mr-2" />
                 Tambah ke Keranjang
@@ -125,6 +130,10 @@ export default function ProductDetailPage() {
                 size="lg"
                 variant="outline"
                 className="w-full rounded-xl h-12 border-green-600 text-green-600 hover:bg-green-50"
+                onClick={async () => {
+                  await addToCart(product.id);
+                  router.push("/cart");
+                }}
               >
                 Beli Sekarang
               </Button>
