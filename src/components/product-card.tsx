@@ -26,7 +26,6 @@ export default function ProductCard({
   category,
   seller,
 }: ProductCardProps) {
-  const [isLiked, setIsLiked] = useState(false);
   const { cart, loadingCart, errorCart, addToCart } = useCart();
 
   const formatPrice = (price: number) => {
@@ -37,9 +36,6 @@ export default function ProductCard({
       maximumFractionDigits: 0,
     }).format(price);
   };
-
-  // Generate random rating between 4.0 and 5.0
-  const rating = (4 + Math.random()).toFixed(1);
 
   return (
     <Card className="overflow-hidden border-0 rounded-xl hover-scale group elegant-card">
@@ -66,32 +62,10 @@ export default function ProductCard({
           >
             {category}
           </Badge>
-
-          {/* Like button */}
-          <button
-            className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full flex items-center justify-center bg-white/90 transition-all hover:bg-white shadow-sm"
-            onClick={(e) => {
-              e.preventDefault();
-              setIsLiked(!isLiked);
-            }}
-          >
-            <Heart
-              className={`h-4 w-4 ${
-                isLiked
-                  ? "fill-red-500 text-red-500"
-                  : "text-gray-600 dark:text-gray-400"
-              }`}
-            />
-          </button>
         </div>
       </Link>
 
       <CardContent className="p-4">
-        <div className="flex items-center gap-1 mb-2">
-          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-          <span className="text-sm font-medium">{rating}</span>
-        </div>
-
         <Link href={`/products/${id}`}>
           <h3 className="font-semibold text-lg mb-1 hover:text-green-600 transition-colors line-clamp-1">
             {title}
