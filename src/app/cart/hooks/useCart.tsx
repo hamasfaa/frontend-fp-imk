@@ -29,7 +29,8 @@ export function useCart() {
         throw new Error("Gagal mengambil data keranjang");
       }
       const data = response.data;
-      const formattedCart = data.data.items.map((item: any) => ({
+      const items = data?.data?.items ?? [];
+      const formattedCart = items.map((item: any) => ({
         id: item.product_id,
         title: item.name,
         price: item.price,

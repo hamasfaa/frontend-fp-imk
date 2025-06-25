@@ -22,25 +22,29 @@ export function useMyTransactions() {
 
       const data = response.data;
 
-      const formattedTransactions = data.data.map((transaction: any) => ({
-        id: transaction.id,
-        totalPrice: transaction.total_price,
-        status: transaction.status,
-        details: transaction.transaction_details.map((detail: any) => ({
-          id: detail.id,
-          subTotalPrice: detail.sub_total_price,
-          price: detail.price,
-          quantity: detail.quantity,
-          product: {
-            id: detail.Product.id,
-            name: detail.Product.name,
-            price: detail.Product.price,
-            quantity: detail.Product.quantity,
-            category: detail.Product.category,
-            imagePath: detail.Product.image_path,
-          },
-        })),
-      }));
+      const formattedTransactions = Array.isArray(data?.data)
+        ? data.data.map((transaction: any) => ({
+            id: transaction.id,
+            totalPrice: transaction.total_price,
+            status: transaction.status,
+            details: Array.isArray(transaction.transaction_details)
+              ? transaction.transaction_details.map((detail: any) => ({
+                  id: detail.id,
+                  subTotalPrice: detail.sub_total_price,
+                  price: detail.price,
+                  quantity: detail.quantity,
+                  product: {
+                    id: detail.Product?.id ?? "",
+                    name: detail.Product?.name ?? "",
+                    price: detail.Product?.price ?? 0,
+                    quantity: detail.Product?.quantity ?? 0,
+                    category: detail.Product?.category ?? "",
+                    imagePath: detail.Product?.image_path ?? "",
+                  },
+                }))
+              : [],
+          }))
+        : [];
 
       setTransactions(formattedTransactions);
     } catch (error: any) {

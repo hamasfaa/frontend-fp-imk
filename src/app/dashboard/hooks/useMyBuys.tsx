@@ -22,7 +22,8 @@ export function useMyBuys() {
 
       const data = response.data;
 
-      const formattedBuys = data.data.map((transaction: any) => ({
+      const transactions = Array.isArray(data?.data) ? data.data : [];
+      const formattedBuys = transactions.map((transaction: any) => ({
         id: transaction.id,
         totalPrice: transaction.total_price,
         status: transaction.status,
