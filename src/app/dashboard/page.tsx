@@ -363,7 +363,7 @@ export default function DashboardPage() {
                       </div>
                     </div>
                   </div>
-                  {filteredProducts.length > 0 ? (
+                  {filteredProducts && filteredProducts.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {filteredProducts.map((product: any) => (
                         <Card key={product.id} className="overflow-hidden">
@@ -550,46 +550,51 @@ export default function DashboardPage() {
                       </p>
                     )}
 
-                    {buys.map((buy: any) => {
-                      return (
-                        <div
-                          key={buy.id}
-                          className="flex items-center gap-4 justify-between border-b pb-4"
-                        >
-                          <div className="flex items-center gap-4">
-                            <div>
-                              <h4 className="font-medium">Pesanan #{buy.id}</h4>
-                              <p className="text-sm text-muted-foreground">
-                                {buy.details.length} produk • Rp{" "}
-                                {buy.totalPrice.toLocaleString("id-ID")}
-                              </p>
+                    {buys &&
+                      buys.map((buy: any) => {
+                        return (
+                          <div
+                            key={buy.id}
+                            className="flex items-center gap-4 justify-between border-b pb-4"
+                          >
+                            <div className="flex items-center gap-4">
+                              <div>
+                                <h4 className="font-medium">
+                                  Pesanan #{buy.id}
+                                </h4>
+                                <p className="text-sm text-muted-foreground">
+                                  {buy.details.length} produk • Rp{" "}
+                                  {buy.totalPrice.toLocaleString("id-ID")}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Badge
+                                variant={
+                                  buy.status === "selesai"
+                                    ? "default"
+                                    : buy.status === "proses"
+                                    ? "secondary"
+                                    : buy.status === "batal"
+                                    ? "destructive"
+                                    : "outline"
+                                }
+                                className="ml-auto"
+                              >
+                                {buy.status
+                                  ? buy.status.charAt(0).toUpperCase() +
+                                    buy.status.slice(1)
+                                  : "Diproses"}
+                              </Badge>
+                              <Button variant="outline" size="sm">
+                                <Link href={`/dashboard/${buy.id}`}>
+                                  Detail
+                                </Link>
+                              </Button>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <Badge
-                              variant={
-                                buy.status === "selesai"
-                                  ? "default"
-                                  : buy.status === "proses"
-                                  ? "secondary"
-                                  : buy.status === "batal"
-                                  ? "destructive"
-                                  : "outline"
-                              }
-                              className="ml-auto"
-                            >
-                              {buy.status
-                                ? buy.status.charAt(0).toUpperCase() +
-                                  buy.status.slice(1)
-                                : "Diproses"}
-                            </Badge>
-                            <Button variant="outline" size="sm">
-                              <Link href={`/dashboard/${buy.id}`}>Detail</Link>
-                            </Button>
-                          </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
                   </div>
                 </CardContent>
               </Card>

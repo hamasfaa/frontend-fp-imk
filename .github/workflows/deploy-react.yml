@@ -21,7 +21,6 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
-
       - name: Install dependencies
         run: npm ci
 
@@ -30,18 +29,44 @@ jobs:
           echo "NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_BASE_URL }}" >> .env
           echo "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${{ secrets.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY }}" >> .env
           echo "NEXT_PUBLIC_YOUTUBE_API_KEY=${{ secrets.NEXT_PUBLIC_YOUTUBE_API_KEY }}" >> .env
-
-      - name: Build project (optional)
+      - name: Build Next.js app
         run: npm run build
 
-      - name: Deploy all files via SCP
+      - name: Prepare deploy folder
+        run: |
+          mkdir deploy
+          cp -r .next public node_modules package.json .env deploy/
+      - name: Deploy via SCP
         uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
-          source: |
-            ./
+          source: "deploy/"
           target: "/var/www/nextjs-app"
-          strip_components: 0
+
+      - name: Run post-deploy SSH commands
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd /var/www/nextjs-app
+
+            shopt -s dotglob nullglob
+            mv deploy/* ./
+            shopt -u dotglob nullglob
+            rm -rf deploy
+
+            if ! command -v pm2 &> /dev/null
+            then
+              echo "PM2 not found, installing..."
+              sudo npm install -g pm2
+            fi
+
+            pm2 delete nextjs-app || true
+            pm2 start npm --name "nextjs-app" -- start
+            pm2 save

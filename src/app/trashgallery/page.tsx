@@ -225,7 +225,7 @@ export default function ProductsPage() {
         </div>
       )}
 
-      {sortedProducts.length > 0 ? (
+      {sortedProducts && sortedProducts.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {sortedProducts.map((product: any) => (
             <ProductCard
