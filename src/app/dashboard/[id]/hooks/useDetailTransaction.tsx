@@ -28,7 +28,7 @@ export function useDetailTransaction(id: string) {
             quantity: detail.quantity,
             subtotal: detail.sub_total_price,
             image: detail.Product.image_path
-              ? `http://127.0.0.1:8000/${detail.product.image_path.replace(
+              ? `http://34.101.249.2:8000/${detail.product.image_path.replace(
                   /^\.\/?/,
                   ""
                 )}`

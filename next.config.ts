@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
       "akcdn.detik.net.id",
       "cdn.detik.net.id",
       "i.ytimg.com",
-      "127.0.0.1",
+      "34.101.249.2",
     ],
   },
 };

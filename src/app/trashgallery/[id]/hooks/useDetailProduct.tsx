@@ -22,7 +22,7 @@ export function useDetailProduct(id: string) {
           title: data.data.name,
           price: data.data.price,
           image: data.data.image_path
-            ? `http://127.0.0.1:8000/${data.data.image_path.replace(
+            ? `http://34.101.249.2:8000/${data.data.image_path.replace(
                 /^\.\/?/,
                 ""
               )}`

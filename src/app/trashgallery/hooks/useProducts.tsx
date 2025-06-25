@@ -22,7 +22,10 @@ export function useProducts() {
           title: item.name,
           price: item.price,
           image: item.image_path
-            ? `http://127.0.0.1:8000/${item.image_path.replace(/^\.\/?/, "")}`
+            ? `http://34.101.249.2:8000/${item.image_path.replace(
+                /^\.\/?/,
+                ""
+              )}`
             : "/placeholder.svg?height=200&width=400",
           quantity: item.quantity,
           category: item.category,

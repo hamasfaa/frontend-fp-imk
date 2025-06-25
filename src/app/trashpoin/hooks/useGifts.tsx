@@ -23,7 +23,10 @@ export function useGifts() {
         name: gift.name,
         point: gift.point_price,
         image: gift.image_path
-          ? `http://127.0.0.1:8000/${gift.image_path.replace(/^\/?\.?\/?/, "")}`
+          ? `http://34.101.249.2:8000/${gift.image_path.replace(
+              /^\/?\.?\/?/,
+              ""
+            )}`
           : "/placeholder.svg?height=200&width=400",
         quantity: gift.quantity,
       }));
